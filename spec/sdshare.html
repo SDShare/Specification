@@ -1,0 +1,501 @@
+﻿<html>
+
+<header>
+    <title>SDShare - A Protocol for the syndication of resource descriptions</title>
+</header>
+
+<body style="width:660px">
+  <div class="header">
+    <h1 class="title">SDShare - A Protocol for the syndication of resource descriptions</h1>
+    <div class="version">Version 1.0</div>
+    <div class="author">Author: Graham Moore</div>
+    <div class="author">Author: Lars Marius Garshol</div>
+  </div>
+
+  <div class="section">
+    <h2 class="title">1. Abstract</h2>
+    <p>
+      SDShare is a protocol for the syndication of resource descriptions. It defines how a RESTful service can publish a series of feeds that list snapshots and changes to collections of resources. This protocol also defines how a client should process those feeds and the linked resource descriptions so that a local store is in sync. [[next sentence is not needed]]A client can synchronize with more than one server to act as an aggregator for resource descriptions.
+    </p>    
+  </div>
+
+  <div class="section">
+    <h2>2. Normative References</h2>
+
+    <p>The following references list works upon which this protocol is dependent.</p>
+
+    <ul>
+        <li>HTTP: RFC 2616 HTTP 1.1. Revision: 1.8. September 2004.</li>
+        <li>Atom: RFC 4287 The Atom Syndication Format. December 2005.</li>
+        <li>RDF: Resource Description Framework (RDF): Concepts and Abstract Syntax. February 2004</li>
+        <li>NTriples: add reference</li>
+        <li>RDFXml: add reference</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>3. Concepts</h2>
+
+    <p>This protocol defines the following hierarchy of Atom feeds published by a server to expose one or more collection(s) of resource descriptions:
+    <ul>
+        <li>An overview feed which lists the collections of semantic descriptions that the server exposes.</li>
+        <li>A collection feed for each collection of semantic descriptions that each links to a corresponding snapshots feed and a corresponding fragments feed</li>
+        <li>A snapshots feed for each collection. Each snapshot represents the state of a collection at point of time</li>
+        <li>A fragments feed for each collection. Each fragment is created because it is the new representation of a topic that has changed. </li>
+    </ul>
+    </p>
+
+    <p>
+    The protocol also specifies how a client should interpret and process these feeds in order to syndicate the server's semantic descriptions. A client that wishes to maintain a local semantic collection in sync with one held on the server first fetches the most recent snapshot for the required collection. It then subscribes to the feed of change fragments for that collection. This feed lists fragments of which each represent one or more changes in the underlying semantic collection. These fragments are created and an entry added to the feed when a topic is updated, added or deleted from the collection. The next time the client pulls the feed it updates its local collection with the new version of the topic.</p>
+
+    <p class="note">NOTE: the notion of a client and server is solely defined by the responsibilities of each. Thus a given machine can act both as client and server (peer-to-peer scenario) or restrict itself to exactly one of the roles (publish-subscribe scenario).</p>
+
+    <p class="note">NOTE: The term “topic” refers in this specification to any reification of a given semantic description.</p>
+
+    <p>The protocol provides no provision against malicious or broken servers. It requires the client to trust all upstream servers.</p>
+  </div>
+
+  <div class="section">
+    <h2 class="title">4. Protocol</h2>
+
+    <div class="section">
+        <h3 class="title">4.1. Terminology</h3>
+        <p>
+        <ul>
+          <li>Server Node: A source of semantic descriptions that hosts both feed and data services so other nodes can observe and understand the state of the collection being managed over time.</li>
+          <li>Client Node: A node that subscribes to one or more server nodes and implements the update semantics defined in this protocol.</li>
+        </ul>
+        </p>    
+    </div>
+
+    <div class="section">
+        <h3 class="title">4.2. Server Contract</h3>
+        <p>
+        <ul>
+          <li>Server Node: A source of semantic descriptions that hosts both feed and data services so other nodes can observe and understand the state of the collection being managed over time.</li>
+          <li>Client Node: A node that subscribes to one or more server nodes and implements the update semantics defined in this protocol.</li>
+        </ul>
+        </p>    
+
+        <p>A server node is responsible for providing information about the state of the collection(s) it is managing. It provides a number of feeds that allow clients to see which aspects of the map have changed over time and data services that allow a client to fetch representations of the collection or individual topic instances in order to update a client environment.
+        </p>
+    </div>
+
+    <div class="section">
+        <h3 class="title">4.3. Feeds & Data Services</h3>
+        <p>A compliant server will provide the following Atom 1.0 feeds, fragment data services and snapshot data services.</p>
+
+        <div class="section">
+            <h4 class="title">4.3.1. Overview Feed</h4>
+            <p>The overview feed lists all collections of semantic descriptions that are being managed by the server.</p>
+
+            <p>The collections feed comprises a feed with between 0 - N feed items. Each feed item represents a collection of semantic descriptions that are being exposed by this server.</p>
+
+            <p>Each  collection feed item is required to have the mandatory ATOM feed item properties and MUST contain:
+            <ul>
+                <li>A link element with the following attributes; rel='http://www.egovpt.org/sdshare/collectionfeed', type='application/atom+xml' and href whose value links to the collection feed for that collection.</li>
+                <li>An updated element whose value is the date time of the most recently updated item being exposed by the collection.</li>
+            </ul>            
+            </p>
+
+            <pre>            
+Example: 
+
+Http request for server http://sdshare.org:
+GET /collections
+
+The Atom payload of the overview feed contains an entry for each separate semantic collection. 
+Each entry has a link to an Atom feed for the specified collection.
+
+Example response body:
+
+&lt;?xml version="1.0" encoding="utf-8"?>
+   &lt;feed xmlns="http://www.w3.org/2005/Atom">
+   &lt;title>Collectiond managed by wwww.sdshare.org&lt;/title>
+   &lt;link href="http://www.sdshare.org"/>
+   &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
+   &lt;author>
+     &lt;name>SDShare Server&lt;/name>
+   &lt;/author>
+   &lt;id>urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6&lt;/id>
+   &lt;!-- collection entry -->
+   &lt;entry>
+     &lt;title>eGovernment Resources Topic Map&lt;/title>
+     &lt;!-- a link to the atom feed that has entries linking to
+          the snapshots and fragments feed for this map -->
+     &lt;link rel="http://www.egovpt.org/sdshare/collectionfeed" type="application/atom+xml"
+           href="http://sdshare.networkedplanet.com/topicmaps/
+                 egov"/>
+     &lt;id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id>
+     &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
+     &lt;summary>A topic map that contains the classification of
+              eGovernment services.&lt;/summary>
+   &lt;/entry>
+   &lt;!-- an entry follows for each collection being exposed.
+                ...
+   -->
+ &lt;/feed>
+
+            </pre>
+
+        </div>
+
+        <div class="section">
+            <h4 class="title">4.3.2. Collection Feed</h4>   
+        
+            <p>A collection feed is a feed for a specified collection of resource descriptions. A feed of this kinds lists exactly two entries, one entry linking to a snapshots feed and one to a fragments feed.</p>
+            
+            <!-- do we still want this dependency stuff? It does have its place. e.g. instance data referencing a schema. -->
+            <p>Through one or more share:dependency elements the collection feed can optionally declare dependencies on other collection feeds from this or other servers that should be recursively processed before the current one.</p>
+
+            <p>
+The Atom payload of the response contains the two entries, one that links to a feed with all snapshots of the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/snapshotsfeed), and another one that links to an Atom feed that lists change fragments to the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/fragmentsfeed). Optionally, both links can be duplicated in the entries with rel-attributes that have the value alternate. This helps Atom feed readers to correctly display the links.            
+            </p>
+
+
+            <pre>
+Example Http request for http://sdshare.org:
+GET /topicmaps/egov
+
+&lt;a:feed xmlns:a="http://www.w3.org/2005/Atom">
+  &lt;a:title>eGov TM&lt;/a:title>
+  &lt;a:updated>2008-09-26T11:13:40-01:00&lt;/a:updated>
+  &lt;a:subtitle>Feeds around the eGov TM&lt;/a:subtitle>
+  &lt;a:id>http://http://psi.egovpt.org/feeds/testtm/&lt;/a:id>
+  &lt;a:author>
+    &lt;a:name>Isidor&lt;/a:name>
+  &lt;/a:author>
+  &lt;a:link href="http://http://psi.egovpt.org/feeds/testtm/" rel="self"/>
+  &lt;dependency xmlns="http://www.egovpt.org/sdshare">http://www.otherserver.org/feeds/ontology/&lt;/dependency>
+  &lt;a:entry>
+    &lt;a:title>eGov TM: Fragments&lt;/a:title>
+    &lt;a:id>http://http://psi.egovpt.org/testtm/fragments/&lt;/a:id>
+    &lt;a:updated>2008-09-11T17:58:39-01:00&lt;/a:updated>
+    &lt;a:author>
+      &lt;a:name>Isidor&lt;/a:name>
+    &lt;/a:author>
+    &lt;a:link href="http://http://psi.egovpt.org/testtm/fragments/" rel="alternate" type="application/atom+xml"/>
+    &lt;a:link href="http://http://psi.egovpt.org/testtm/fragments/" rel="http://www.egovpt.org/sdshare/fragmentsfeed" type="application/atom+xml"/>
+  &lt;/a:entry>
+  &lt;a:entry>
+    &lt;a:title>eGov TM: Snapshots&lt;/a:title>
+    &lt;a:id>http://http://psi.egovpt.org/testtm/snapshots/&lt;/a:id>
+    &lt;a:updated>2008-09-11T17:58:39-01:00&lt;/a:updated>
+    &lt;a:author>
+      &lt;a:name>Isidor&lt;/a:name>
+    &lt;/a:author>
+    &lt;a:link href="http://http://psi.egovpt.org/testtm/snapshots/" rel="alternate" type="application/atom+xml"/>
+    &lt;a:link href="http://http://psi.egovpt.org/testtm/snapshots/" rel="http://www.egovpt.org/sdshare/snapshotsfeed" type="application/atom+xml"/>
+  &lt;/a:entry>
+&lt;/a:feed>
+            
+            </pre>
+        </div>
+
+        <div class="section">
+            <h4 class="title">4.3.3. Snapshots Feed</h4>
+            <p>A snapshot is the complete data set for a collection at some point in time. The snapshots feed lists all the snapshots that are exposed by this collection. Each entry in the feed represents a single snapshot. The entry must contain a link element that has a rel attribute with value 'snapshot', a type attribute whose value is 'application/rdf+xml' or 'plain/text+nt' or '...'. It must also have an href attribute that links to the data for the snapshot. The item's updated element should reflect the datetime when the snapshot was taken.</p>
+
+            <pre>
+Example Http-request
+Server: http://wwww.sdshare.org
+GET /collections/employees/snapshots
+
+Example Response:
+
+&lt;?xml version="1.0"?>
+ &lt;feed xmlns="http://www.w3.org/2005/Atom"
+  xmlns:sdshare="http://www.egovpt.org/sdshare">
+   &lt;title>The Snapshots of the eGovernment
+          Resources Topic Map&lt;/title>
+   &lt;subtitle>A list of all snapshots of
+             this collection&lt;/subtitle>
+   &lt;author>
+     &lt;name>SDShare Server&lt;/name>
+   &lt;/author>
+   &lt;updated>2008-07-17T12:15:07.020071Z&lt;/updated>
+   &lt;id>urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6&lt;/id>
+   &lt;sdshare:ServerSrcLocatorPrefix>http://psi.networkedplanet.
+   com/&lt;/sdshare:ServerSrcLocatorPrefix>
+   &lt;!-- a link to the feed -->
+   &lt;link rel="self"
+         href="http://sdshare.networkedplanet.com/topicmaps/
+                egov/snapshots"/>
+   &lt;entry>
+     &lt;title>Snapshot 2008-07-17&lt;/title>
+     &lt;updated>2008-07-17T14:04:42.205299Z&lt;/updated>
+     &lt;!-- a link to the XTM 1.0 snapshot -->
+     &lt;link rel="alternate" type="application/x-tm+xml;version=1.0"
+           href="http://sdshare.networkedplanet.com/topicmaps
+                  /egov/shapshots/60a76c80-d300-11d9-b93C-
+                  0003939e0af6"/>
+     &lt;id>60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
+   &lt;/entry>
+   &lt;!-- an entry follows for each XTM snapshot being exposed.
+                ...
+   -->
+ &lt;/feed>    
+            </pre>
+        </div>
+
+        <div class="section">
+            <h4>4.3.4. Resources Feed</h4>
+            <p>The resources feed is an ATOM 1.0 feed. The entries of the feed list resources that have changed in a given time period. </p>
+
+            <p>The resources feed service accepts an optional request parameter since, which is used to specify that the client only wishes to see entries for fragments produced after the time given in the parameter. The effect of this parameter is to remove from the response body <entry> elements with timestamps in the atom:updated element older than the given time. </p>
+
+            <p>Note that links to the service in the collection feed will not include this parameter. Clients must therefore add it to the URL themselves should they wish to use it. The value of the parameter is a datetime value matching the format specified in section 3.3 of the Atom specification.</p>
+
+            <p>The Atom payload contains an entry for each fragment. Each entry contains one link to the fragment and the updated element contains the time at which the fragment was created. In addition to the standard Atom elements this protocol introduces two new elements.
+
+    The new elements are:
+
+        &lt;ServerSrcLocatorPrefix>: Indicates to a client the prefix to use to locate topic properties that should be removed when updating a semantic description. This element should occur once as a child element of the <feed> and before the first entry. (See the fragment update algorithm below for more information.) 
+
+    and
+
+        &lt;TopicSI>: Indicates to a client which topic is being updated from all those present in the fragment. This element MUST occur at least once as a child element of each <entry>. (See the fragment update algorithm below for more information). More than one TopicSI element can be specified. 
+            </p>
+
+            <pre>
+    Example Service URL (with since): [server]/topicmaps/egov/fragments?since=2011-03-21T14:49:23Z 
+
+     GET /topicmaps/egov/fragments
+
+    Example response body:
+
+
+     &lt;?xml version="1.0"?>
+     &lt;feed xmlns="http://www.w3.org/2005/Atom" xmlns:sdshare="http://www.egovpt.org/sdshare">
+       &lt;title>Change fragments from the eGovernment Resources
+              Topic Map&lt;/title>
+       &lt;author>
+         &lt;name>SDShare Server&lt;/name>
+       &lt;/author>
+       &lt;updated>2008-07-17T15:47:17.062211Z&lt;/updated>
+       &lt;id>28C5DBD8-652A-4617-8C4A-C0FFC49B4475&lt;/id>
+       &lt;!-- The serversrclocatorprefix is used by a client
+        to know the providence of topic map constructs. -->
+     &lt;sdshare:ServerSrcLocatorPrefix>http://psi.networkedplanet.
+     com/&lt;/sdshare:ServerSrcLocatorPrefix>
+       &lt;link rel="self"
+             href="http://sdshare.networkedplanet.com/
+                   topicmaps/egov/fragments"/>
+       &lt;entry>
+       &lt;!-- Best practice: the topic display name or the PSI should be used for the entry title -->
+         &lt;title>ISO 19115:2003 Geographic Information -
+                Metadata&lt;/title>
+         &lt;!-- the published date and time of the fragment -->
+         &lt;updated>2008-07-17T15:55:21.971145Z&lt;/updated>
+         &lt;!-- the id value is some unique value -->
+         &lt;id>69CD5264-DB78-49c1-A7E4-04EECFA0AA85&lt;/id>
+         &lt;link rel="alternate" type="application/x-tm+xml;version=1.0"
+               href="http://sdshare.networkedplanet.com/topicmaps/
+                     egov/fragments/69CD5264-DB78-49c1-A7E4-
+                     04EECFA0AA85"/>
+         &lt;sdshare:TopicSI>http://psi.egovpt.org/standard/ISO+19115
+        %3A+Geographic+Information+-+Metadata&lt;/sdshare:TopicSI>
+       &lt;/entry>
+       &lt;!-- an entry follows for each fragment being exposed                  ...
+       -->
+     &lt;/feed>
+
+    Supported datatypes are:
+
+        application/x-tm+xml;version=1.0: Serialization as XTM 1.0
+
+        application/x-tm+xml;version=2.0: Serialization as XTM 2.0
+
+        application/x-tm+xml: Serialization as either XTM 1.0 or XTM 2.0 acceptable
+
+        application/rdf+xml: Serialization as RDF/XML         
+            </pre>
+        </div>
+
+        <div class="section">
+            <h4 class="title">4.3.5. Resource Description Service</h4>        
+            <p>The fragment data service is a service that returns a specified collection fragment.</p>
+
+            <pre>
+Sample request:
+GET /collections/sample-collection/resources?id=http://www.sampleorg.com/products/xyz
+ACCEPT-TYPE:plain/nt+text
+            </pre>
+
+            <p>Response structure:
+                A collection fragment can be represented as a valid XTM 1.0, XTM 2.0 or RDF/XML document.
+
+                The generation of fragments for feeds with RDF/XML payload is described in the RDF subsection below.
+
+                A fragment for a feed with XTM 1.0 or XTM 2.0 payload is created in the context of one or more topics. The following algorithm should be applied when generating a fragment for given topic:
+
+                    Let 'export' mean to create an XTM representation of the TMDM construct
+                    Let T be the topic being exported.
+                    export T including ALL topicnames, identifiers, and occurrences.
+                    for each topicname in T export a topic stub for each name type (if it exists)
+                    for each topicname in T export a topic stub for each scope topic (if it exists)
+                    for each occurrence in T export a topic stub for the occurrence type (if it exists)
+                    for each occurrence in T export a topic stub for each scope topic (if it exists)
+                    for each association A in which T plays a role export the association
+                    for each association A export a topic stub for the association type
+                    for each association A export a topic stub for each topic scope topic
+                    for each role R in A export a topic stub for the role type and one for the role player UNLESS the role player is T 
+
+                For each stub topic exported (the following minimum must be exported)
+
+                    export ALL of the topic's identifiers 
+
+                ALL topics (stub or not) MUST have at least one Subject Identifier.
+
+                A server may choose to export more information in the fragment, what is described here is the minimum required.
+                </p>
+         </div>
+     
+      </div> <!-- end 4.3 -->     
+
+      <div class="section">
+        <h3 class="title">4.4. Client Role</h3>
+        <p>There are two aspects to client behaviour. The first is consumption of the feeds provided by the service the second is the updating of the local map based on the fragments it retrieves.</p>
+
+
+        <div class="section">
+            <h4>4.4.1. Initialisation</h4>
+            <p>When a client first wants to sync with a server it can use the feeds provided to locate the collection of interest, retrieve its full representation and merge it into the local collection it is managing.</p>
+        </div>
+      
+        <div class="section">
+            <h4>4.4.2. A Clean Replacement</h4>
+            <p>If a client has a local collection that contains semantic descriptions from more than one server and wants to fetch and update the latest full collection from ONE source then it MUST do the following. Apply the delete topic algorithm from below, but apply it to all topics in his local collection. Then proceed in terms of 'A Clean Start', by fetching the collections from the originating servers and merging it in.</p>
+        </div>
+
+        <div class="section">
+            <h4>4.4.3. A partial update</h4>
+            <p>Clients wishing to update their local collection as new changes occur on the server, should process the fragments feed for the appropriate collection. The client MUST record the date and time that it last updated its local copy and then find all Atom entries that have an updated value after that time. For each of these, in time order of most distant to most recent it should apply the following update algorithm.</p>
+        </div>
+
+
+        <div class="section">
+            <h4>4.4.4. The Fragment Update Algorithm</h4>
+            <p>
+            <pre>
+            Bind SI to each TopicSI element in the Atom entry E.
+
+    Let SP be the value of the ServerSrcLocatorPrefix element in the Atom feed F
+    feed F contains E
+    entry E references fragment TF
+    Let LC be the local collection
+    Let T be the topic in LC that has a subjectidentifier that matches SI
+    For all names, occurrences and associations in which T plays a role, TMC
+
+        Delete all SrcLocators of TMC that begin with SP
+        If the count of srclocators on TMC = 0 then delete TMC 
+    Merge in the fragment TF using SP as the base all generated source locators.
+
+    NOTE: To deprecate a topic publish an empty topic
+
+    NOTE: The understanding is that each name, occurrence and association created or modified during the update will in its internal, TMDM-conformant representation have or get item identifiers that act as source locators and start with the ServerSrcLocatorPrefix. 
+            </pre>
+
+            <pre>
+4.5. RDF payload
+
+This protocol is agnostic to the nature of the semantic payload. This section describes how the protocol works when the payload used is RDF.
+
+    NOTE: While the protocol is payload agnostic, it does not describe how to interoperate between different semantic payload representations. 
+
+4.5.1. The Fragment Generation Algorithm
+
+To create a RDF fragment for a given entity uses the following algorithm:
+
+For a given Resource
+
+    Let T be the topic (a logical thing) being exported.
+    Let R be the resource that identifies T
+    Let S be the set of statements that comprise T
+    Let 'export' mean to create a RDF representation of a graph of statements linked to the RDF resource. This graph is treated as a logical unit for the purposes of this algorithm 
+
+4.5.2. The Fragment Update Algorithm
+
+    Let SP be the value of the ServerSrcLocatorPrefix element in the Atom feed F
+    feed F contains E
+    entry E references fragment TF
+    Let LC be the local collection
+    Let R be the resource in LC that has a Resource URI that matches the SI
+    For all statements where R is either the Subject or the Object of the statement STAT
+
+        Delete all SrcLocators of STAT that begin with SP
+        If the count of srclocators on STAT = 0 then delete TMC 
+    Merge in the fragment TF using SP as the base all generated source locators. 
+
+The above algorithm talks about the SrcLocators of a Statement. This is not an inherant property in the RDF data model. This is a required extension for the RDF payload. All Statements are defined as a subtype of Resource. Thus each RDF statement (as a Resource) MUST have a list property that is a set of URI's. This property is called 'SrcLocators' and is used as described above.                       
+            </pre>
+            </p>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="section">
+        <h2>6. Deployment Guidelines and Best Practices (informative)</h2>
+        <p>This document defines no normative rules for the correct deployment of network topologies that build on it. However, this section proposes a few best practices to handle recurrent deployment issues.</p>
+        
+        <div class="section">
+            <h3>6.1. Trust and Security</h3>
+        
+            <p>The protocol assumes that the syndication of semantic descriptions happens with trusted servers. Importing descriptions from untrusted, potentially malicious sources can have serious repercussions including corrupting the client's data. If the protocol is used in P2P scenarios where every node acts both as server and client, this implies that all partners need to trust each other.</p>
+
+            <p>Should the protocol be used to syndicate confidential data, it can be combined with end-to-end encryption between nodes, typically over https. Furthermore, it can leverage existing authentication mechanisms such as basic access authentication over http or https. In particularly sensitive cases it can also be employed over dedicated network connections.</p>
+
+        </div>
+
+        <div class="section">
+            <h3>6.2. Extensions: Atom Publishing</h3>
+            <p>The protocol does not define a mechanism for the client to update information on the server. However, valid use cases for such behaviour exist, e.g. in the case of local editing that is the pushed back on the server. The Atom Publishing Protocol is a good way to implement such behaviour, and a second revision of this CWA could contain a detailed specification for using it for this purpose.</p>
+
+        </div>          
+    </div>
+
+    <div class="section">
+        <h2>7. Test Suite</h2>
+
+        <pre>
+These are set of files that can evolve into a test suite for implementations of the client and serve as target production set for servers.
+
+Base test topic map: XTM 1.0: notificationbase.1_0.xtm , XTM 2.0: notificationbase.xtm , XSLT: xtm2toxtm1.xsl
+
+    Atom topic map feed document: topicmapfeed.xml
+
+    Atom topic fragments feed: notificationbase_changes.xml
+
+    Atom topic map snapshots feed: notificationbase_snapshotfeed.xml
+    starting topic map xtm: (identical to the first the snapshot topic map xtm)
+    snapshot topic map xtm (in normal XTM.)
+
+    fragments of the topics changed from one snapshot to the other: t100_1216302921.9711449.xtm , t100_1216303605.4192071.xtm                
+        </pre>
+
+    </div>
+
+    <div class="section">
+        <h2>8. References</h2>
+        <pre>
+    XTM 1.0 http://www.topicmaps.org/xtm/index.html
+
+    XTM 2.0` http://www.isotopicmaps.org/sam/sam-xtm/
+
+    RFC 2616 HTTP 1.1 http://www.w3.org/Protocols/rfc2616/rfc2616.html
+
+    XML 1.0 http://www.w3.org/TR/REC-xml/
+
+    RFC 4287 Atom Syndication Format 1.0 http://www.atompub.org/rfc4287.html          
+        </pre>
+
+    </div>
+
+ </body>
+ </html>    
+
+
+
+

@@ -107,7 +107,7 @@ Example response body:
    &lt;author>
      &lt;name>SDShare Server&lt;/name>
    &lt;/author>
-   &lt;id>urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6&lt;/id>
+   &lt;id>http://www.sdshare.org/sdshare/collections&lt;/id>
    &lt;!-- collection entry -->
    &lt;entry>
      &lt;title>eGovernment Resources Collection&lt;/title>
@@ -140,37 +140,36 @@ The Atom payload of the response contains the two entries, one that links to a f
 
             <pre>
 Example Http request for http://sdshare.org:
-GET /collections/egov
+GET /sdshare/collections/egov
 
 &lt;a:feed xmlns:a="http://www.w3.org/2005/Atom">
-  &lt;a:title>eGov TM&lt;/a:title>
+  &lt;a:title>eGov Resource Collection&lt;/a:title>
   &lt;a:updated>2008-09-26T11:13:40-01:00&lt;/a:updated>
-  &lt;a:subtitle>Feeds around the eGov TM&lt;/a:subtitle>
-  &lt;a:id>http://http://psi.egovpt.org/feeds/testtm/&lt;/a:id>
+  &lt;a:id>http://sdshare.org/sdshare/collections/egov&lt;/a:id>
   &lt;a:author>
-    &lt;a:name>Isidor&lt;/a:name>
+    &lt;a:name>SDShare Server&lt;/a:name>
   &lt;/a:author>
-  &lt;a:link href="http://http://psi.egovpt.org/feeds/testtm/" rel="self"/>
+  &lt;a:link href="http://sdshare.org/sdshare/collections/egov" rel="self"/>
   &lt;dependency xmlns="http://www.egovpt.org/sdshare">http://www.otherserver.org/feeds/ontology/&lt;/dependency>
   &lt;a:entry>
-    &lt;a:title>eGov TM: Fragments&lt;/a:title>
-    &lt;a:id>http://http://psi.egovpt.org/testtm/fragments/&lt;/a:id>
+    &lt;a:title>eGov Collection Updates&lt;/a:title>
+    &lt;a:id>http://sdshare.org/sdshare/collections/egov/updates&lt;/a:id>
     &lt;a:updated>2008-09-11T17:58:39-01:00&lt;/a:updated>
     &lt;a:author>
-      &lt;a:name>Isidor&lt;/a:name>
+      &lt;a:name>SDShare Server&lt;/a:name>
     &lt;/a:author>
-    &lt;a:link href="http://http://psi.egovpt.org/testtm/fragments/" rel="alternate" type="application/atom+xml"/>
-    &lt;a:link href="http://http://psi.egovpt.org/testtm/fragments/" rel="http://www.egovpt.org/sdshare/fragmentsfeed" type="application/atom+xml"/>
+    &lt;a:link href="http://sdshare.org/sdshare/collections/egov/updates" rel="alternate" type="application/atom+xml"/>
+    &lt;a:link href="http://sdshare.org/sdshare/collections/egov/updates" rel="http://www.egovpt.org/sdshare/fragmentsfeed" type="application/atom+xml"/>
   &lt;/a:entry>
   &lt;a:entry>
-    &lt;a:title>eGov TM: Snapshots&lt;/a:title>
-    &lt;a:id>http://http://psi.egovpt.org/testtm/snapshots/&lt;/a:id>
+    &lt;a:title>eGov Collection Snapshots&lt;/a:title>
+    &lt;a:id>http://sdshare.org/sdshare/collections/egov/snapshots&lt;/a:id>
     &lt;a:updated>2008-09-11T17:58:39-01:00&lt;/a:updated>
     &lt;a:author>
-      &lt;a:name>Isidor&lt;/a:name>
+      &lt;a:name>SDShare Server&lt;/a:name>
     &lt;/a:author>
-    &lt;a:link href="http://http://psi.egovpt.org/testtm/snapshots/" rel="alternate" type="application/atom+xml"/>
-    &lt;a:link href="http://http://psi.egovpt.org/testtm/snapshots/" rel="http://www.egovpt.org/sdshare/snapshotsfeed" type="application/atom+xml"/>
+    &lt;a:link href="http://sdshare.org/sdshare/collections/egov/snapshots" rel="alternate" type="application/atom+xml"/>
+    &lt;a:link href="http://sdshare.org/sdshare/collections/egov/snapshots" rel="http://www.egovpt.org/sdshare/snapshotsfeed" type="application/atom+xml"/>
   &lt;/a:entry>
 &lt;/a:feed>
             
@@ -179,12 +178,12 @@ GET /collections/egov
 
         <div class="section">
             <h4 class="title">4.3.3. Snapshots Feed</h4>
-            <p>A snapshot is the complete data set for a collection at some point in time. The snapshots feed lists all the snapshots that are exposed by this collection. Each entry in the feed represents a single snapshot. The entry must contain a link element that has a rel attribute with value 'snapshot', a type attribute whose value is 'application/rdf+xml' or 'plain/text+nt' or '...'. It must also have an href attribute that links to the data for the snapshot. The item's updated element should reflect the datetime when the snapshot was taken.</p>
+            <p>A snapshot is the complete data set for a collection at some point in time. The snapshots feed lists all the snapshots that are exposed by this collection. Each entry in the feed represents a single snapshot. The entry must contain a link element that has a rel attribute with value 'http://www.egovpt.org/sdshare/snapshot', a type attribute whose value is 'application/rdf+xml' or 'plain/text+nt' or '...'. It must also have an href attribute that links to the data for the snapshot. The item's updated element should reflect the datetime when the snapshot was taken.</p>
 
             <pre>
 Example Http-request
 Server: http://wwww.sdshare.org
-GET /collections/employees/snapshots
+GET /collections/egov/snapshots
 
 Example Response:
 

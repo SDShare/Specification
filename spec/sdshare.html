@@ -142,43 +142,43 @@ The Atom payload of the response contains the two entries, one that links to a f
 Example Http request for http://sdshare.org:
 GET /sdshare/collections/egov
 
-&lt;a:feed xmlns:a="http://www.w3.org/2005/Atom">
-  &lt;a:title>eGov Resource Collection&lt;/a:title>
-  &lt;a:updated>2008-09-26T11:13:40-01:00&lt;/a:updated>
-  &lt;a:id>http://sdshare.org/sdshare/collections/egov&lt;/a:id>
-  &lt;a:author>
-    &lt;a:name>SDShare Server&lt;/a:name>
-  &lt;/a:author>
-  &lt;a:link href="http://sdshare.org/sdshare/collections/egov" rel="self"/>
+&lt;feed xmlns="http://www.w3.org/2005/Atom">
+  &lt;title>eGov Resource Collection&lt;/title>
+  &lt;updated>2008-09-26T11:13:40-01:00&lt;/updated>
+  &lt;id>http://sdshare.org/sdshare/collections/egov&lt;/a:id>
+  &lt;author>
+    &lt;name>SDShare Server&lt;/name>
+  &lt;/author>
+  &lt;link href="http://sdshare.org/sdshare/collections/egov" rel="self"/>
   &lt;dependency xmlns="http://www.egovpt.org/sdshare">http://www.otherserver.org/feeds/ontology/&lt;/dependency>
-  &lt;a:entry>
-    &lt;a:title>eGov Collection Updates&lt;/a:title>
-    &lt;a:id>http://sdshare.org/sdshare/collections/egov/updates&lt;/a:id>
-    &lt;a:updated>2008-09-11T17:58:39-01:00&lt;/a:updated>
-    &lt;a:author>
-      &lt;a:name>SDShare Server&lt;/a:name>
-    &lt;/a:author>
-    &lt;a:link href="http://sdshare.org/sdshare/collections/egov/updates" rel="alternate" type="application/atom+xml"/>
-    &lt;a:link href="http://sdshare.org/sdshare/collections/egov/updates" rel="http://www.egovpt.org/sdshare/fragmentsfeed" type="application/atom+xml"/>
-  &lt;/a:entry>
-  &lt;a:entry>
-    &lt;a:title>eGov Collection Snapshots&lt;/a:title>
-    &lt;a:id>http://sdshare.org/sdshare/collections/egov/snapshots&lt;/a:id>
-    &lt;a:updated>2008-09-11T17:58:39-01:00&lt;/a:updated>
-    &lt;a:author>
-      &lt;a:name>SDShare Server&lt;/a:name>
-    &lt;/a:author>
-    &lt;a:link href="http://sdshare.org/sdshare/collections/egov/snapshots" rel="alternate" type="application/atom+xml"/>
-    &lt;a:link href="http://sdshare.org/sdshare/collections/egov/snapshots" rel="http://www.egovpt.org/sdshare/snapshotsfeed" type="application/atom+xml"/>
-  &lt;/a:entry>
-&lt;/a:feed>
+  &lt;entry>
+    &lt;title>eGov Collection Updates&lt;/title>
+    &lt;id>http://sdshare.org/sdshare/collections/egov/updates&lt;/a:id>
+    &lt;updated>2008-09-11T17:58:39-01:00&lt;/updated>
+    &lt;author>
+      &lt;name>SDShare Server&lt;/name>
+    &lt;/author>
+    &lt;link href="http://sdshare.org/sdshare/collections/egov/updates" rel="alternate" type="application/atom+xml"/>
+    &lt;link href="http://sdshare.org/sdshare/collections/egov/updates" rel="http://www.egovpt.org/sdshare/fragmentsfeed" type="application/atom+xml"/>
+  &lt;/entry>
+  &lt;entry>
+    &lt;title>eGov Collection Snapshots&lt;/title>
+    &lt;id>http://sdshare.org/sdshare/collections/egov/snapshots&lt;/a:id>
+    &lt;updated>2008-09-11T17:58:39-01:00&lt;/updated>
+    &lt;author>
+      &lt;name>SDShare Server&lt;/name>
+    &lt;/author>
+    &lt;link href="http://sdshare.org/sdshare/collections/egov/snapshots" rel="alternate" type="application/atom+xml"/>
+    &lt;link href="http://sdshare.org/sdshare/collections/egov/snapshots" rel="http://www.egovpt.org/sdshare/snapshotsfeed" type="application/atom+xml"/>
+  &lt;/entry>
+&lt;/feed>
             
             </pre>
         </div>
 
         <div class="section">
             <h4 class="title">4.3.3. Snapshots Feed</h4>
-            <p>A snapshot is the complete data set for a collection at some point in time. The snapshots feed lists all the snapshots that are exposed by this collection. Each entry in the feed represents a single snapshot. The entry must contain a link element that has a rel attribute with value 'http://www.egovpt.org/sdshare/snapshot', a type attribute whose value is 'application/rdf+xml' or 'plain/text+nt' or '...'. It must also have an href attribute that links to the data for the snapshot. The item's updated element should reflect the datetime when the snapshot was taken.</p>
+            <p>A snapshot is the complete RDF data set for a collection at some point in time. The snapshots feed lists all the snapshots that are exposed by this collection. Each entry in the feed represents a single snapshot. The entry must contain a link element that has a rel attribute with value 'http://www.egovpt.org/sdshare/snapshot', a type attribute whose value is 'application/rdf+xml' or 'plain/text+nt' or '...'. It must also have an href attribute that links to the data for the snapshot. The item's updated element should reflect the datetime when the snapshot was taken.</p>
 
             <pre>
 Example Http-request
@@ -188,34 +188,25 @@ GET /collections/egov/snapshots
 Example Response:
 
 &lt;?xml version="1.0"?>
- &lt;feed xmlns="http://www.w3.org/2005/Atom"
-  xmlns:sdshare="http://www.egovpt.org/sdshare">
-   &lt;title>The Snapshots of the eGovernment
-          Resources Topic Map&lt;/title>
-   &lt;subtitle>A list of all snapshots of
-             this collection&lt;/subtitle>
+ &lt;feed xmlns="http://www.w3.org/2005/Atom" xmlns:sdshare="http://www.egovpt.org/sdshare">
+   &lt;title>The Snapshots of the eGovernment Resource Collection&lt;/title>
+   &lt;subtitle>A list of all snapshots of this collection&lt;/subtitle>
    &lt;author>
      &lt;name>SDShare Server&lt;/name>
    &lt;/author>
    &lt;updated>2008-07-17T12:15:07.020071Z&lt;/updated>
-   &lt;id>urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6&lt;/id>
-   &lt;sdshare:ServerSrcLocatorPrefix>http://psi.networkedplanet.
-   com/&lt;/sdshare:ServerSrcLocatorPrefix>
+   &lt;id>http://sdshare.org/collections/egov/snapshots&lt;/id>
    &lt;!-- a link to the feed -->
-   &lt;link rel="self"
-         href="http://sdshare.networkedplanet.com/topicmaps/
-                egov/snapshots"/>
+   &lt;link rel="self" href="http://sdshare.org/collections/egov/snapshots"/>
    &lt;entry>
      &lt;title>Snapshot 2008-07-17&lt;/title>
      &lt;updated>2008-07-17T14:04:42.205299Z&lt;/updated>
-     &lt;!-- a link to the XTM 1.0 snapshot -->
-     &lt;link rel="alternate" type="application/x-tm+xml;version=1.0"
-           href="http://sdshare.networkedplanet.com/topicmaps
-                  /egov/shapshots/60a76c80-d300-11d9-b93C-
-                  0003939e0af6"/>
+     &lt;!-- a link to the snapshot RDF -->
+     &lt;link rel="alternate" type="application/rdf+xml"
+           href="http://sdshare.org/collections/egov/snapshots/0001"/>
      &lt;id>60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
    &lt;/entry>
-   &lt;!-- an entry follows for each XTM snapshot being exposed.
+   &lt;!-- an entry follows for each RDF snapshot being exposed.
                 ...
    -->
  &lt;/feed>    
@@ -226,83 +217,63 @@ Example Response:
             <h4>4.3.4. Resources Feed</h4>
             <p>The resources feed is an ATOM 1.0 feed. The entries of the feed list resources that have changed in a given time period. </p>
 
-            <p>The resources feed service accepts an optional request parameter since, which is used to specify that the client only wishes to see entries for fragments produced after the time given in the parameter. The effect of this parameter is to remove from the response body <entry> elements with timestamps in the atom:updated element older than the given time. </p>
+            <p>The resources feed service accepts an optional request parameter called 'since'. This parameter can be used to specify that the client only wishes to see entries for fragments produced after the time given in the parameter. The effect of this parameter is to remove from the response body <entry> elements with timestamps in the atom:updated element older than the given time.</p>
 
             <p>Note that links to the service in the collection feed will not include this parameter. Clients must therefore add it to the URL themselves should they wish to use it. The value of the parameter is a datetime value matching the format specified in section 3.3 of the Atom specification.</p>
 
-            <p>The Atom payload contains an entry for each fragment. Each entry contains one link to the fragment and the updated element contains the time at which the fragment was created. In addition to the standard Atom elements this protocol introduces two new elements.
+            <p>The Atom payload contains an entry for each updated resource. Each entry contains a link to the resource and the updated element contains the time at which the resource was updated. In addition to the standard Atom elements this protocol introduces one new element.
 
-    The new elements are:
+    The new element is:
 
-        &lt;ServerSrcLocatorPrefix>: Indicates to a client the prefix to use to locate topic properties that should be removed when updating a semantic description. This element should occur once as a child element of the <feed> and before the first entry. (See the fragment update algorithm below for more information.) 
-
-    and
-
-        &lt;TopicSI>: Indicates to a client which topic is being updated from all those present in the fragment. This element MUST occur at least once as a child element of each <entry>. (See the fragment update algorithm below for more information). More than one TopicSI element can be specified. 
+        &lt;ResourceUri>: Indicates to a client which resource is being updated from all those present in the resource representation. This element MUST occur at least once as a child element of each <entry>. (See the fragment update algorithm below for more information).
             </p>
 
             <pre>
-    Example Service URL (with since): [server]/topicmaps/egov/fragments?since=2011-03-21T14:49:23Z 
-
-     GET /topicmaps/egov/fragments
+    Example Service URL (with since): 
+    [server]/sdshare/collections/egov/updates?since=2011-03-21T14:49:23Z 
 
     Example response body:
 
-
      &lt;?xml version="1.0"?>
      &lt;feed xmlns="http://www.w3.org/2005/Atom" xmlns:sdshare="http://www.egovpt.org/sdshare">
-       &lt;title>Change fragments from the eGovernment Resources
-              Topic Map&lt;/title>
+       &lt;title>Updates feed from the eGovernment Resources Collection&lt;/title>
        &lt;author>
          &lt;name>SDShare Server&lt;/name>
        &lt;/author>
        &lt;updated>2008-07-17T15:47:17.062211Z&lt;/updated>
        &lt;id>28C5DBD8-652A-4617-8C4A-C0FFC49B4475&lt;/id>
-       &lt;!-- The serversrclocatorprefix is used by a client
-        to know the providence of topic map constructs. -->
-     &lt;sdshare:ServerSrcLocatorPrefix>http://psi.networkedplanet.
-     com/&lt;/sdshare:ServerSrcLocatorPrefix>
-       &lt;link rel="self"
-             href="http://sdshare.networkedplanet.com/
-                   topicmaps/egov/fragments"/>
+       &lt;link rel="self" href="http://sdshare.org/sdshare/collections/egov/updates"/>
        &lt;entry>
-       &lt;!-- Best practice: the topic display name or the PSI should be used for the entry title -->
-         &lt;title>ISO 19115:2003 Geographic Information -
-                Metadata&lt;/title>
+       &lt;!-- Best practice: a resource's RDFS Label or the resource uri -->
+         &lt;title>Government Spending&lt;/title>
          &lt;!-- the published date and time of the fragment -->
          &lt;updated>2008-07-17T15:55:21.971145Z&lt;/updated>
+
          &lt;!-- the id value is some unique value -->
          &lt;id>69CD5264-DB78-49c1-A7E4-04EECFA0AA85&lt;/id>
-         &lt;link rel="alternate" type="application/x-tm+xml;version=1.0"
-               href="http://sdshare.networkedplanet.com/topicmaps/
-                     egov/fragments/69CD5264-DB78-49c1-A7E4-
-                     04EECFA0AA85"/>
-         &lt;sdshare:TopicSI>http://psi.egovpt.org/standard/ISO+19115
-        %3A+Geographic+Information+-+Metadata&lt;/sdshare:TopicSI>
+         &lt;link rel="alternate" type="application/rdf+xml"
+               href="http://sdshare.org/sdshare/collections/egov/updates?id=http://www.egov.org/concepts/governmentspending"/>
+         &lt;sdshare:ResourceUri>http://www.egov.org/concepts/governmentspending&lt;/sdshare:TopicSI>
        &lt;/entry>
-       &lt;!-- an entry follows for each fragment being exposed                  ...
+       &lt;!-- an entry follows for each changed resouce being exposed                  ...
        -->
      &lt;/feed>
 
-    Supported datatypes are:
-
-        application/x-tm+xml;version=1.0: Serialization as XTM 1.0
-
-        application/x-tm+xml;version=2.0: Serialization as XTM 2.0
-
-        application/x-tm+xml: Serialization as either XTM 1.0 or XTM 2.0 acceptable
+    Supported datatypes are for resource representations are:
 
         application/rdf+xml: Serialization as RDF/XML         
+
+        Say something about content negotiation versus links to different types?
             </pre>
         </div>
 
         <div class="section">
             <h4 class="title">4.3.5. Resource Description Service</h4>        
-            <p>The fragment data service is a service that returns a specified collection fragment.</p>
+            <p>The fragment data service is a service that returns a specified resource.</p>
 
             <pre>
 Sample request:
-GET /collections/sample-collection/resources?id=http://www.sampleorg.com/products/xyz
+GET [server]/sdshare/collections/egov/updates?id=http://www.egov.org/concepts/governmentspending
 ACCEPT-TYPE:plain/nt+text
             </pre>
 

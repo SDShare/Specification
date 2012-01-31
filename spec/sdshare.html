@@ -15,15 +15,13 @@
   <div class="section">
     <h2 class="title">1. Abstract</h2>
     <p>
-      SDShare is a protocol for the syndication of resource descriptions. It defines how a RESTful service can publish a series of feeds that list snapshots and changes to collections of resources. This protocol also defines how a client should process those feeds and the linked resource descriptions so that a local store is in sync. [[next sentence is not needed]]A client can synchronize with more than one server to act as an aggregator for resource descriptions.
+      SDShare is a protocol for the syndication of resource descriptions. It defines how a RESTful service can publish a series of feeds that list snapshots and changes to collections of resources. This protocol also defines how a client should process those feeds and the linked resource descriptions so that a local store is in sync.
     </p>    
   </div>
 
   <div class="section">
     <h2>2. Normative References</h2>
-
     <p>The following references list works upon which this protocol is dependent.</p>
-
     <ul>
         <li>HTTP: RFC 2616 HTTP 1.1. Revision: 1.8. September 2004.</li>
         <li>Atom: RFC 4287 The Atom Syndication Format. December 2005.</li>
@@ -34,23 +32,22 @@
   </div>
 
   <div class="section">
-    <h2>3. Concepts</h2>
+    <h2>3. Introduction</h2>
+    <p>RDF provides a very flexible data model that allows data of any form to be represented. The existing RDF family of standards define how to serialise the model, how to query the model (SPARQL) and how to update the model (SPARQL Update). However, there are no protocols that define how a machine can both expose and consume RDF in a system of interconnected nodes. A classic use case for this requirement is where one RDF server contains collection of master data and another RDF system wishes to use that data. The master data will change over time. This protocol defines how the master data server can publish the changes to the resources it manages and how a client can consume then to ensure it is in sync</p>
 
-    <p>This protocol defines the following hierarchy of Atom feeds published by a server to expose one or more collection(s) of resource descriptions:
+    <p>A SDShare server should publish the following hierarchy of Atom feeds to expose one or more collection(s) of resource descriptions:
     <ul>
-        <li>An overview feed which lists the collections of semantic descriptions that the server exposes.</li>
-        <li>A collection feed for each collection of semantic descriptions that each links to a corresponding snapshots feed and a corresponding fragments feed</li>
-        <li>A snapshots feed for each collection. Each snapshot represents the state of a collection at point of time</li>
-        <li>A fragments feed for each collection. Each fragment is created because it is the new representation of a topic that has changed. </li>
+        <li>An overview feed which lists the collections of resource descriptions that the server exposes.</li>
+        <li>A collection feed for each collection of resource descriptions that each links to a corresponding snapshots feed and a corresponding fragments feed.</li>
+        <li>A snapshots feed for each collection. Each snapshot represents the state of a collection at point of time.</li>
+        <li>A resouce update feed for each collection. Each feed entry exists to reflect that the referenced resource has been updated. </li>
     </ul>
     </p>
 
     <p>
-    The protocol also specifies how a client should interpret and process these feeds in order to syndicate the server's semantic descriptions. A client that wishes to maintain a local semantic collection in sync with one held on the server first fetches the most recent snapshot for the required collection. It then subscribes to the feed of change fragments for that collection. This feed lists fragments of which each represent one or more changes in the underlying semantic collection. These fragments are created and an entry added to the feed when a topic is updated, added or deleted from the collection. The next time the client pulls the feed it updates its local collection with the new version of the topic.</p>
+    SDShare also specifies how a client should interpret and process these feeds in order to consume the resource descriptions. A client that wishes to maintain a local resource collection in sync with one held on the server first fetches the most recent snapshot for the required collection. It then subscribes to the update feed for that collection. This feed lists the resource whose state has changed in the underlying resource collection. A client can retrieve the RDF for a updated resource and update its local collection.</p>
 
     <p class="note">NOTE: the notion of a client and server is solely defined by the responsibilities of each. Thus a given machine can act both as client and server (peer-to-peer scenario) or restrict itself to exactly one of the roles (publish-subscribe scenario).</p>
-
-    <p class="note">NOTE: The term “topic” refers in this specification to any reification of a given semantic description.</p>
 
     <p>The protocol provides no provision against malicious or broken servers. It requires the client to trust all upstream servers.</p>
   </div>
@@ -62,7 +59,7 @@
         <h3 class="title">4.1. Terminology</h3>
         <p>
         <ul>
-          <li>Server Node: A source of semantic descriptions that hosts both feed and data services so other nodes can observe and understand the state of the collection being managed over time.</li>
+          <li>Server Node: A source of resource descriptions that hosts both feed and data services so other nodes can observe and retrieve the state of the collection being managed.</li>
           <li>Client Node: A node that subscribes to one or more server nodes and implements the update semantics defined in this protocol.</li>
         </ul>
         </p>    
@@ -70,28 +67,21 @@
 
     <div class="section">
         <h3 class="title">4.2. Server Contract</h3>
-        <p>
-        <ul>
-          <li>Server Node: A source of semantic descriptions that hosts both feed and data services so other nodes can observe and understand the state of the collection being managed over time.</li>
-          <li>Client Node: A node that subscribes to one or more server nodes and implements the update semantics defined in this protocol.</li>
-        </ul>
-        </p>    
-
-        <p>A server node is responsible for providing information about the state of the collection(s) it is managing. It provides a number of feeds that allow clients to see which aspects of the map have changed over time and data services that allow a client to fetch representations of the collection or individual topic instances in order to update a client environment.
+        <p>A server node is responsible for providing information about the state of the resource collection(s) it is managing. It provides a number of feeds that allow clients to see which aspects of the collection have changed over time and data services that allow a client to fetch complete representations of the collection or individual resource representations in order to update a client environment.
         </p>
     </div>
 
     <div class="section">
         <h3 class="title">4.3. Feeds & Data Services</h3>
-        <p>A compliant server will provide the following Atom 1.0 feeds, fragment data services and snapshot data services.</p>
+        <p>A compliant server will provide the following Atom 1.0 feeds, resource representation data services and snapshot representation data services.</p>
 
         <div class="section">
             <h4 class="title">4.3.1. Overview Feed</h4>
-            <p>The overview feed lists all collections of semantic descriptions that are being managed by the server.</p>
+            <p>The overview feed lists all collections of resource descriptions that are being managed by the server.</p>
 
-            <p>The collections feed comprises a feed with between 0 - N feed items. Each feed item represents a collection of semantic descriptions that are being exposed by this server.</p>
+            <p>The collections feed comprises a feed consisting of 0 - N feed items. Each feed item represents a collection of resource descriptions that are being exposed by this server.</p>
 
-            <p>Each  collection feed item is required to have the mandatory ATOM feed item properties and MUST contain:
+            <p>Each collection feed item is required to have the mandatory ATOM feed item properties and MUST contain:
             <ul>
                 <li>A link element with the following attributes; rel='http://www.egovpt.org/sdshare/collectionfeed', type='application/atom+xml' and href whose value links to the collection feed for that collection.</li>
                 <li>An updated element whose value is the date time of the most recently updated item being exposed by the collection.</li>
@@ -104,7 +94,7 @@ Example:
 Http request for server http://sdshare.org:
 GET /collections
 
-The Atom payload of the overview feed contains an entry for each separate semantic collection. 
+The Atom payload of the overview feed contains an entry for each separate resource collection. 
 Each entry has a link to an Atom feed for the specified collection.
 
 Example response body:
@@ -112,7 +102,7 @@ Example response body:
 &lt;?xml version="1.0" encoding="utf-8"?>
    &lt;feed xmlns="http://www.w3.org/2005/Atom">
    &lt;title>Collectiond managed by wwww.sdshare.org&lt;/title>
-   &lt;link href="http://www.sdshare.org"/>
+   &lt;link href="http://www.sdshare.org/sdshare/collections"/>
    &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
    &lt;author>
      &lt;name>SDShare Server&lt;/name>
@@ -120,16 +110,13 @@ Example response body:
    &lt;id>urn:uuid:60a76c80-d399-11d9-b93C-0003939e0af6&lt;/id>
    &lt;!-- collection entry -->
    &lt;entry>
-     &lt;title>eGovernment Resources Topic Map&lt;/title>
-     &lt;!-- a link to the atom feed that has entries linking to
-          the snapshots and fragments feed for this map -->
+     &lt;title>eGovernment Resources Collection&lt;/title>
+     &lt;!-- a link to the collection atom feed -->
      &lt;link rel="http://www.egovpt.org/sdshare/collectionfeed" type="application/atom+xml"
-           href="http://sdshare.networkedplanet.com/topicmaps/
-                 egov"/>
+           href="http://sdshare.org/sdshare/collections/egov"/>
      &lt;id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id>
      &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
-     &lt;summary>A topic map that contains the classification of
-              eGovernment services.&lt;/summary>
+     &lt;summary>A set of RDF resources describing an eGovernment classification scheme.&lt;/summary>
    &lt;/entry>
    &lt;!-- an entry follows for each collection being exposed.
                 ...
@@ -137,25 +124,23 @@ Example response body:
  &lt;/feed>
 
             </pre>
-
         </div>
 
         <div class="section">
             <h4 class="title">4.3.2. Collection Feed</h4>   
         
-            <p>A collection feed is a feed for a specified collection of resource descriptions. A feed of this kinds lists exactly two entries, one entry linking to a snapshots feed and one to a fragments feed.</p>
+            <p>A collection feed is a feed for a specified collection of resource descriptions. A feed of this kinds lists exactly two entries, one entry linking to a snapshots feed and one to an updates feed.</p>
             
             <!-- do we still want this dependency stuff? It does have its place. e.g. instance data referencing a schema. -->
             <p>Through one or more share:dependency elements the collection feed can optionally declare dependencies on other collection feeds from this or other servers that should be recursively processed before the current one.</p>
 
             <p>
-The Atom payload of the response contains the two entries, one that links to a feed with all snapshots of the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/snapshotsfeed), and another one that links to an Atom feed that lists change fragments to the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/fragmentsfeed). Optionally, both links can be duplicated in the entries with rel-attributes that have the value alternate. This helps Atom feed readers to correctly display the links.            
-            </p>
+The Atom payload of the response contains the two entries, one that links to a feed with all snapshots of the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/snapshotsfeed), and another one that links to an Atom feed that lists updates to the resources in the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/fragmentsfeed). Optionally, both links can be duplicated in the entries with rel-attributes that have the value alternate. This can help some Atom feed readers to correctly display the links.      </p>
 
 
             <pre>
 Example Http request for http://sdshare.org:
-GET /topicmaps/egov
+GET /collections/egov
 
 &lt;a:feed xmlns:a="http://www.w3.org/2005/Atom">
   &lt;a:title>eGov TM&lt;/a:title>

@@ -1,4 +1,20 @@
 ﻿<html>
+<style>
+h2:before {
+    counter-increment: h2;
+    content: counter(h2) ". ";
+    counter-reset: h3 h4;
+}
+h3:before {
+    counter-increment: h3;
+    content: counter(h2) "." counter(h3) ". ";
+    counter-reset: h4;
+}
+h4:before {
+    counter-increment: h4;
+    content: counter(h2) "." counter(h3) "." counter(h4) ". ";
+}
+</style>
 
 <header>
     <title>SDShare - A Protocol for the syndication of resource descriptions</title>
@@ -13,14 +29,14 @@
   </div>
 
   <div class="section">
-    <h2 class="title">1. Abstract</h2>
+    <h2 class="title">Abstract</h2>
     <p>
       SDShare is a protocol for the syndication of resource descriptions. It defines how a RESTful service can publish a series of feeds that list snapshots and changes to collections of resources. This protocol also defines how a client should process those feeds and the linked resource descriptions so that a local store is in sync.
     </p>    
   </div>
 
   <div class="section">
-    <h2>2. Normative References</h2>
+    <h2>Normative References</h2>
     <p>The following references list works upon which this protocol is dependent.</p>
     <ul>
         <li>HTTP: <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC</a>,
@@ -40,7 +56,7 @@
   </div>
 
   <div class="section">
-    <h2>3. Introduction</h2>
+    <h2>Introduction</h2>
     <p>RDF provides a very flexible data model that allows data of any form to be represented. The existing RDF family of standards define how to serialise the model, how to query the model (SPARQL) and how to update the model (SPARQL Update). However, there are no protocols that define how a machine can both expose and consume RDF in a system of interconnected nodes. A classic use case for this requirement is where one RDF server contains collection of master data and another RDF system wishes to use that data. The master data will change over time. This protocol defines how the master data server can publish the changes to the resources it manages and how a client can consume then to ensure it is in sync</p>
 
     <p>A SDShare server should publish the following hierarchy of Atom feeds to expose one or more collection(s) of resource descriptions:
@@ -61,10 +77,10 @@
   </div>
 
   <div class="section">
-    <h2 class="title">4. Protocol</h2>
+    <h2 class="title">Protocol</h2>
 
     <div class="section">
-        <h3 class="title">4.1. Terminology</h3>
+        <h3 class="title">Terminology</h3>
         <p>
         <ul>
           <li>Server Node: A source of resource descriptions that hosts both feed and data services so other nodes can observe and retrieve the state of the collection being managed.</li>
@@ -74,17 +90,17 @@
     </div>
 
     <div class="section">
-        <h3 class="title">4.2. Server Contract</h3>
+        <h3 class="title">Server Contract</h3>
         <p>A server node is responsible for providing information about the state of the resource collection(s) it is managing. It provides a number of feeds that allow clients to see which aspects of the collection have changed over time and data services that allow a client to fetch complete representations of the collection or individual resource representations in order to update a client environment.
         </p>
     </div>
 
     <div class="section">
-        <h3 class="title">4.3. Feeds & Data Services</h3>
+        <h3 class="title">Feeds & Data Services</h3>
         <p>A compliant server will provide the following Atom 1.0 feeds, resource representation data services and snapshot representation data services.</p>
 
         <div class="section">
-            <h4 class="title">4.3.1. Overview Feed</h4>
+            <h4 class="title">Overview Feed</h4>
             <p>The overview feed lists all collections of resource descriptions that are being managed by the server.</p>
 
             <p>The collections feed comprises a feed consisting of 0 - N feed items. Each feed item represents a collection of resource descriptions that are being exposed by this server.</p>
@@ -135,7 +151,7 @@ Example response body:
         </div>
 
         <div class="section">
-            <h4 class="title">4.3.2. Collection Feed</h4>   
+            <h4 class="title">Collection Feed</h4>   
         
             <p>A collection feed is a feed for a specified collection of resource descriptions. A feed of this kinds lists exactly two entries, one entry linking to a snapshots feed and one to an updates feed.</p>
             
@@ -185,7 +201,7 @@ GET /sdshare/collections/egov
         </div>
 
         <div class="section">
-            <h4 class="title">4.3.3. Snapshots Feed</h4>
+            <h4 class="title">Snapshots Feed</h4>
             <p>A snapshot is the complete RDF data set for a collection at some point in time. The snapshots feed lists all the snapshots that are exposed by this collection. Each entry in the feed represents a single snapshot. The entry must contain a link element that has a rel attribute with value 'http://www.egovpt.org/sdshare/snapshot', a type attribute whose value is 'application/rdf+xml' or 'plain/text+nt' or '...'. It must also have an href attribute that links to the data for the snapshot. The item's updated element should reflect the datetime when the snapshot was taken.</p>
 
             <pre>
@@ -222,7 +238,7 @@ Example Response:
         </div>
 
         <div class="section">
-            <h4>4.3.4. Resources Feed</h4>
+            <h4>Resources Feed</h4>
             <p>The resources feed is an ATOM 1.0 feed. The entries of the feed list resources that have changed in a given time period. </p>
 
             <p>The resources feed service accepts an optional request parameter called 'since'. This parameter can be used to specify that the client only wishes to see entries for fragments produced after the time given in the parameter. The effect of this parameter is to remove from the response body <entry> elements with timestamps in the atom:updated element older than the given time.</p>
@@ -276,7 +292,7 @@ Example Response:
         </div>
 
         <div class="section">
-            <h4 class="title">4.3.5. Resource Description Service</h4>        
+            <h4 class="title">Resource Description Service</h4>        
             <p>The fragment data service is a service that returns a specified resource.</p>
 
             <pre>
@@ -317,28 +333,28 @@ ACCEPT-TYPE:plain/nt+text
       </div> <!-- end 4.3 -->     
 
       <div class="section">
-        <h3 class="title">4.4. Client Role</h3>
+        <h3 class="title">Client Role</h3>
         <p>There are two aspects to client behaviour. The first is consumption of the feeds provided by the service the second is the updating of the local map based on the fragments it retrieves.</p>
 
 
         <div class="section">
-            <h4>4.4.1. Initialisation</h4>
+            <h4>Initialisation</h4>
             <p>When a client first wants to sync with a server it can use the feeds provided to locate the collection of interest, retrieve its full representation and merge it into the local collection it is managing.</p>
         </div>
       
         <div class="section">
-            <h4>4.4.2. A Clean Replacement</h4>
+            <h4>A Clean Replacement</h4>
             <p>If a client has a local collection that contains semantic descriptions from more than one server and wants to fetch and update the latest full collection from ONE source then it MUST do the following. Apply the delete topic algorithm from below, but apply it to all topics in his local collection. Then proceed in terms of 'A Clean Start', by fetching the collections from the originating servers and merging it in.</p>
         </div>
 
         <div class="section">
-            <h4>4.4.3. A partial update</h4>
+            <h4>A partial update</h4>
             <p>Clients wishing to update their local collection as new changes occur on the server, should process the fragments feed for the appropriate collection. The client MUST record the date and time that it last updated its local copy and then find all Atom entries that have an updated value after that time. For each of these, in time order of most distant to most recent it should apply the following update algorithm.</p>
         </div>
 
 
         <div class="section">
-            <h4>4.4.4. The Fragment Update Algorithm</h4>
+            <h4>The Fragment Update Algorithm</h4>
             <p>
             <pre>
             Bind SI to each TopicSI element in the Atom entry E.
@@ -358,53 +374,75 @@ ACCEPT-TYPE:plain/nt+text
 
     NOTE: The understanding is that each name, occurrence and association created or modified during the update will in its internal, TMDM-conformant representation have or get item identifiers that act as source locators and start with the ServerSrcLocatorPrefix. 
             </pre>
+            </section>
+     </section>
 
-            <pre>
-4.5. RDF payload
+<div class="section">
+  <h3>RDF payload</h3>
 
-This protocol is agnostic to the nature of the semantic payload. This section describes how the protocol works when the payload used is RDF.
+<p>This protocol is agnostic to the nature of the semantic
+payload. This section describes how the protocol works when the
+payload used is RDF.</p>
 
-    NOTE: While the protocol is payload agnostic, it does not describe how to interoperate between different semantic payload representations. 
+<p><b>NOTE:</b> While the protocol is payload agnostic, it does not
+describe how to interoperate between different semantic payload
+representations.</p>
 
-4.5.1. The Fragment Generation Algorithm
+<div class="section">
+<h4>The Fragment Generation Algorithm</h4>
 
-To create a RDF fragment for a given entity uses the following algorithm:
+<p>To create a RDF fragment for a given entity uses the following algorithm:</p>
 
-For a given Resource
+<p>For a given Resource</p>
 
-    Let T be the topic (a logical thing) being exported.
-    Let R be the resource that identifies T
-    Let S be the set of statements that comprise T
-    Let 'export' mean to create a RDF representation of a graph of statements linked to the RDF resource. This graph is treated as a logical unit for the purposes of this algorithm 
+<ul>
+   <li>Let T be the topic (a logical thing) being exported.
+   <li>Let R be the resource that identifies T
+   <li>Let S be the set of statements that comprise T
+   <li>Let 'export' mean to create a RDF representation of a graph of
+   statements linked to the RDF resource. This graph is treated as a
+   logical unit for the purposes of this algorithm
+</ul>
 
-4.5.2. The Fragment Update Algorithm
+</div>
+<div class="section">
+<h4>The Fragment Update Algorithm</h4>
 
-    Let SP be the value of the ServerSrcLocatorPrefix element in the Atom feed F
-    feed F contains E
-    entry E references fragment TF
-    Let LC be the local collection
-    Let R be the resource in LC that has a Resource URI that matches the SI
-    For all statements where R is either the Subject or the Object of the statement STAT
+<ul>
+    <li>Let SP be the value of the ServerSrcLocatorPrefix element in the Atom feed F
+    <li>feed F contains E
+    <li>entry E references fragment TF
+    <li>Let LC be the local collection
+    <li>Let R be the resource in LC that has a Resource URI that matches the SI
+    <li>For all statements where R is either the Subject or the Object
+    of the statement STAT
+    <ul>
+        <li>Delete all SrcLocators of STAT that begin with SP
+        <li>If the count of srclocators on STAT = 0 then delete TMC
+    </ul>
+    <li>Merge in the fragment TF using SP as the base all generated
+    source locators.
+</ul>      
 
-        Delete all SrcLocators of STAT that begin with SP
-        If the count of srclocators on STAT = 0 then delete TMC 
-    Merge in the fragment TF using SP as the base all generated source locators. 
-
-The above algorithm talks about the SrcLocators of a Statement. This is not an inherant property in the RDF data model. This is a required extension for the RDF payload. All Statements are defined as a subtype of Resource. Thus each RDF statement (as a Resource) MUST have a list property that is a set of URI's. This property is called 'SrcLocators' and is used as described above.                       
-            </pre>
-            </p>
-        </div>
+<p>The above algorithm talks about the SrcLocators of a
+Statement. This is not an inherent property in the RDF data
+model. This is a required extension for the RDF payload. All
+Statements are defined as a subtype of Resource. Thus each RDF
+statement (as a Resource) MUST have a list property that is a set of
+URI's. This property is called 'SrcLocators' and is used as described
+above.</p>
+</div>
 
       </div>
 
     </div>
 
     <div class="section">
-        <h2>6. Deployment Guidelines and Best Practices (informative)</h2>
+        <h2>Deployment Guidelines and Best Practices (informative)</h2>
         <p>This document defines no normative rules for the correct deployment of network topologies that build on it. However, this section proposes a few best practices to handle recurrent deployment issues.</p>
         
         <div class="section">
-            <h3>6.1. Trust and Security</h3>
+            <h3>Trust and Security</h3>
         
             <p>The protocol assumes that the syndication of semantic descriptions happens with trusted servers. Importing descriptions from untrusted, potentially malicious sources can have serious repercussions including corrupting the client's data. If the protocol is used in P2P scenarios where every node acts both as server and client, this implies that all partners need to trust each other.</p>
 
@@ -413,14 +451,14 @@ The above algorithm talks about the SrcLocators of a Statement. This is not an i
         </div>
 
         <div class="section">
-            <h3>6.2. Extensions: Atom Publishing</h3>
+            <h3>Extensions: Atom Publishing</h3>
             <p>The protocol does not define a mechanism for the client to update information on the server. However, valid use cases for such behaviour exist, e.g. in the case of local editing that is the pushed back on the server. The Atom Publishing Protocol is a good way to implement such behaviour, and a second revision of this CWA could contain a detailed specification for using it for this purpose.</p>
 
         </div>          
     </div>
 
     <div class="section">
-        <h2>7. Test Suite</h2>
+        <h2>Test Suite</h2>
 
         <pre>
 These are set of files that can evolve into a test suite for implementations of the client and serve as target production set for servers.

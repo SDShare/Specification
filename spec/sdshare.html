@@ -1,5 +1,10 @@
 ﻿<html>
 <style>
+body {
+  width: 660px;
+  margin-top: 50pt;
+  margin-left: 50pt;
+}
 h2:before {
     counter-increment: h2;
     content: counter(h2) ". ";
@@ -14,16 +19,20 @@ h4:before {
     counter-increment: h4;
     content: counter(h2) "." counter(h3) "." counter(h4) ". ";
 }
+pre {
+  background-color: lightgray;
+}
 </style>
 
 <header>
     <title>SDShare - A Protocol for the syndication of resource descriptions</title>
 </header>
 
-<body style="width:660px">
+<body>
   <div class="header">
     <h1 class="title">SDShare - A Protocol for the syndication of resource descriptions</h1>
-    <div class="version">Version 1.0</div>
+    <div class="version">Version 1.0 (in progress)</div>
+    <div class="date">Date: 2012-02-17</div>
     <div class="author">Author: Graham Moore</div>
     <div class="author">Author: Lars Marius Garshol</div>
   </div>
@@ -37,7 +46,7 @@ h4:before {
 
   <div class="section">
     <h2>Normative References</h2>
-    <p>The following references list works upon which this protocol is dependent.</p>
+    <p>The following lists works upon which this specification is dependent.</p>
     <ul>
         <li>HTTP: <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC</a>,
             2616 HTTP 1.1. September 2004.</li>
@@ -57,7 +66,7 @@ h4:before {
 
   <div class="section">
     <h2>Introduction</h2>
-    <p>RDF provides a very flexible data model that allows data of any form to be represented. The existing RDF family of standards define how to serialise the model, how to query the model (SPARQL) and how to update the model (SPARQL Update). However, there are no protocols that define how a machine can both expose and consume RDF in a system of interconnected nodes. A classic use case for this requirement is where one RDF server contains collection of master data and another RDF system wishes to use that data. The master data will change over time. This protocol defines how the master data server can publish the changes to the resources it manages and how a client can consume then to ensure it is in sync</p>
+    <p>RDF provides a very flexible data model that allows data of any form to be represented. The existing RDF family of standards define how to serialise the model, how to query the model (SPARQL) and how to update the model (SPARQL Update). However, there are no protocols that define how a machine can both expose and consume RDF in a system of interconnected nodes. A classic use case for this requirement is where one RDF server contains collection of master data and another RDF system wishes to use that data. The master data will change over time. This protocol defines how the master data server can publish the changes to the resources it manages and how a client can consume them to ensure it is in sync.</p>
 
     <p>A SDShare server should publish the following hierarchy of Atom feeds to expose one or more collection(s) of resource descriptions:
     <ul>
@@ -125,7 +134,7 @@ Example response body:
 
 &lt;?xml version="1.0" encoding="utf-8"?>
    &lt;feed xmlns="http://www.w3.org/2005/Atom">
-   &lt;title>Collectiond managed by wwww.sdshare.org&lt;/title>
+   &lt;title>Collection managed by wwww.sdshare.org&lt;/title>
    &lt;link href="http://www.sdshare.org/sdshare/collections"/>
    &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
    &lt;author>
@@ -155,9 +164,6 @@ Example response body:
         
             <p>A collection feed is a feed for a specified collection of resource descriptions. A feed of this kinds lists exactly two entries, one entry linking to a snapshots feed and one to an updates feed.</p>
             
-            <!-- do we still want this dependency stuff? It does have its place. e.g. instance data referencing a schema. -->
-            <p>Through one or more share:dependency elements the collection feed can optionally declare dependencies on other collection feeds from this or other servers that should be recursively processed before the current one.</p>
-
             <p>
 The Atom payload of the response contains the two entries, one that links to a feed with all snapshots of the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/snapshotsfeed), and another one that links to an Atom feed that lists updates to the resources in the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/fragmentsfeed). Optionally, both links can be duplicated in the entries with rel-attributes that have the value alternate. This can help some Atom feed readers to correctly display the links.      </p>
 
@@ -174,7 +180,6 @@ GET /sdshare/collections/egov
     &lt;name>SDShare Server&lt;/name>
   &lt;/author>
   &lt;link href="http://sdshare.org/sdshare/collections/egov" rel="self"/>
-  &lt;dependency xmlns="http://www.egovpt.org/sdshare">http://www.otherserver.org/feeds/ontology/&lt;/dependency>
   &lt;entry>
     &lt;title>eGov Collection Updates&lt;/title>
     &lt;id>http://sdshare.org/sdshare/collections/egov/updates&lt;/a:id>
@@ -450,34 +455,7 @@ above.</p>
 
         </div>
 
-        <div class="section">
-            <h3>Extensions: Atom Publishing</h3>
-            <p>The protocol does not define a mechanism for the client to update information on the server. However, valid use cases for such behaviour exist, e.g. in the case of local editing that is the pushed back on the server. The Atom Publishing Protocol is a good way to implement such behaviour, and a second revision of this CWA could contain a detailed specification for using it for this purpose.</p>
-
-        </div>          
     </div>
-
-    <div class="section">
-        <h2>Test Suite</h2>
-
-        <pre>
-These are set of files that can evolve into a test suite for implementations of the client and serve as target production set for servers.
-
-Base test topic map: XTM 1.0: notificationbase.1_0.xtm , XTM 2.0: notificationbase.xtm , XSLT: xtm2toxtm1.xsl
-
-    Atom topic map feed document: topicmapfeed.xml
-
-    Atom topic fragments feed: notificationbase_changes.xml
-
-    Atom topic map snapshots feed: notificationbase_snapshotfeed.xml
-    starting topic map xtm: (identical to the first the snapshot topic map xtm)
-    snapshot topic map xtm (in normal XTM.)
-
-    fragments of the topics changed from one snapshot to the other: t100_1216302921.9711449.xtm , t100_1216303605.4192071.xtm                
-        </pre>
-
-    </div>
-
  </body>
  </html>    
 

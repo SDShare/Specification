@@ -246,27 +246,38 @@ Example Response:
 
         <div class="section">
             <h4>Resources Feed</h4>
-            <p>The resources feed is an ATOM 1.0 feed. The entries of the feed list resources that have changed in a given time period. </p>
 
-            <p>The Atom payload contains an entry for each updated resource. Each entry contains a link to the resource and the updated element contains the time at which the resource was updated. In addition to the standard Atom elements this protocol introduces one new element.
+<p>The resources feed is an Atom feed. The entries of the feed list
+resources that have changed in a given time period.</p>
 
-    The new element is:
+<p>The Atom specification requires all entries to contain
+an <tt>id</tt> element, which must be unique. SDshare adds no further
+semantics to this element, and clients are advised to avoid depending
+on this element.</p>
 
-        &lt;ResourceUri>: Indicates to a client which resource is being updated from all those present in the resource representation. This element MUST occur at least once as a child element of each <entry>. (See the fragment update algorithm below for more information).
+<p>The Atom payload contains an entry for each updated resource. Each
+entry contains one or more links to the resource and
+the <tt>updated</tt> element contains the time at which the resource
+was updated. Links to the resource must use the <tt>alternate</tt>
+link relationship, and can be in different formats identified with
+the <tt>type</tt> attribute, allowing clients to choose their
+preferred format.</p>
+
+<p>In addition to the standard Atom elements this protocol introduces
+one new element.
+
+The new element is:
+
+<tt>&lt;ResourceUri></tt>: Indicates to a client which resource is
+being updated from all those present in the resource representation.
+This element MUST occur exactly once as a child element of
+each <tt>entry</tt>. (See the fragment update algorithm below for more
+information).
             </p>
-
 
             <p>The resources feed service accepts an optional request parameter called 'since'. This parameter can be used to specify that the client only wishes to see entries for fragments produced after the time given in the parameter. The effect of this parameter is to remove from the response body <entry> elements with timestamps in the atom:updated element older than the given time.</p>
 
             <p>Note that links to the service in the collection feed will not include this parameter. Clients must therefore add it to the URL themselves should they wish to use it. The value of the parameter is a datetime value matching the format specified in section 3.3 of the Atom specification.</p>
-
-<p>As the number of changes made to the collection grows, the number
-of entries in the resources feed can become very large. To avoid
-returning excessively long responses, the server can page the
-resources feed, using the conventions defined in RFC 5005. If the feed
-is paged, each page must contain one link element with the "next"
-relation type. Other link types may also be provided, but this is not
-required.</p>
 
             <pre>
     Example Service URL (with since): 
@@ -306,8 +317,14 @@ required.</p>
         <li>application/rdf+xml: Serialization as RDF/XML
     </ul>
 
-    <p>Say something about content negotiation versus links to
-    different types?</p>
+<p>As the number of changes made to the collection grows, the number
+of entries in the resources feed can become very large. To avoid
+returning excessively long responses, the server can page the
+resources feed, using the conventions defined in RFC 5005. If the feed
+is paged, each page must contain one link element with the "next"
+relation type. Other link types may also be provided, but this is not
+required.</p>
+    
         </div>
 
         <div class="section">
@@ -399,9 +416,9 @@ ACCEPT-TYPE:plain/nt+text
 <div class="section">
   <h3>RDF payload</h3>
 
-<p>This protocol is agnostic to the nature of the semantic
-payload. This section describes how the protocol works when the
-payload used is RDF.</p>
+<p>This protocol is agnostic to the nature of the payload. This
+section describes how the protocol works when the payload used is
+RDF.</p>
 
 <p><b>NOTE:</b> While the protocol is payload agnostic, it does not
 describe how to interoperate between different semantic payload
@@ -410,18 +427,11 @@ representations.</p>
 <div class="section">
 <h4>The Fragment Generation Algorithm</h4>
 
-<p>To create a RDF fragment for a given entity uses the following algorithm:</p>
+<p>To create a RDF fragment for a given resource uses the following
+algorithm: include every statement in which the resource is the
+subject.</p>
 
-<p>For a given Resource</p>
-
-<ul>
-   <li>Let T be the topic (a logical thing) being exported.
-   <li>Let R be the resource that identifies T
-   <li>Let S be the set of statements that comprise T
-   <li>Let 'export' mean to create a RDF representation of a graph of
-   statements linked to the RDF resource. This graph is treated as a
-   logical unit for the purposes of this algorithm
-</ul>
+<p class=ednote>This doesn't handle blank nodes. Fix!</p>
 
 </div>
 <div class="section">

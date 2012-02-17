@@ -61,6 +61,8 @@ pre {
             Syntax Specification (Revised)</a>, W3C Recommendation,
             10 February 2004
            </li>
+        <li>RFC 5005: <a href="http://www.ietf.org/rfc/rfc5005.txt"
+            >Feed Paging and Archiving</a>, IETF Standard, September 2007
     </ul>
   </div>
 
@@ -246,16 +248,25 @@ Example Response:
             <h4>Resources Feed</h4>
             <p>The resources feed is an ATOM 1.0 feed. The entries of the feed list resources that have changed in a given time period. </p>
 
-            <p>The resources feed service accepts an optional request parameter called 'since'. This parameter can be used to specify that the client only wishes to see entries for fragments produced after the time given in the parameter. The effect of this parameter is to remove from the response body <entry> elements with timestamps in the atom:updated element older than the given time.</p>
-
-            <p>Note that links to the service in the collection feed will not include this parameter. Clients must therefore add it to the URL themselves should they wish to use it. The value of the parameter is a datetime value matching the format specified in section 3.3 of the Atom specification.</p>
-
             <p>The Atom payload contains an entry for each updated resource. Each entry contains a link to the resource and the updated element contains the time at which the resource was updated. In addition to the standard Atom elements this protocol introduces one new element.
 
     The new element is:
 
         &lt;ResourceUri>: Indicates to a client which resource is being updated from all those present in the resource representation. This element MUST occur at least once as a child element of each <entry>. (See the fragment update algorithm below for more information).
             </p>
+
+
+            <p>The resources feed service accepts an optional request parameter called 'since'. This parameter can be used to specify that the client only wishes to see entries for fragments produced after the time given in the parameter. The effect of this parameter is to remove from the response body <entry> elements with timestamps in the atom:updated element older than the given time.</p>
+
+            <p>Note that links to the service in the collection feed will not include this parameter. Clients must therefore add it to the URL themselves should they wish to use it. The value of the parameter is a datetime value matching the format specified in section 3.3 of the Atom specification.</p>
+
+<p>As the number of changes made to the collection grows, the number
+of entries in the resources feed can become very large. To avoid
+returning excessively long responses, the server can page the
+resources feed, using the conventions defined in RFC 5005. If the feed
+is paged, each page must contain one link element with the "next"
+relation type. Other link types may also be provided, but this is not
+required.</p>
 
             <pre>
     Example Service URL (with since): 
@@ -287,13 +298,16 @@ Example Response:
        &lt;!-- an entry follows for each changed resouce being exposed                  ...
        -->
      &lt;/feed>
+    </pre>
 
-    Supported datatypes are for resource representations are:
+    <p>Supported datatypes are for resource representations are:</p>
 
-        application/rdf+xml: Serialization as RDF/XML         
+    <ul>
+        <li>application/rdf+xml: Serialization as RDF/XML
+    </ul>
 
-        Say something about content negotiation versus links to different types?
-            </pre>
+    <p>Say something about content negotiation versus links to
+    different types?</p>
         </div>
 
         <div class="section">

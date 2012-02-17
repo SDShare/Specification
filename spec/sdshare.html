@@ -101,42 +101,56 @@ pre {
     <p>The protocol provides no provision against malicious or broken servers. It requires the client to trust all upstream servers.</p>
   </div>
 
+<div class="section">
+<h2 class="title">Conceptual Model</h2>
+
+<p class=ednote>Trying this out to see if it works. This section is
+very much experimental.</p>
+
+<p>A <dfn>server</dfn> is a node which exposes feeds so that other
+nodes can observe and retrieve the state of the data being managed by
+the server.<P>
+
+<p>A <dfn>client</dfn> is a node which subscribes to one or more
+server nodes and implements the update semantics defined in this
+protocol. It is possible for the same node to be both a server and a
+client at the same time.</p>
+
+<p>An SDshare server contains a set of collections.
+A <dfn>collection</dfn> is a coherent data set, defined by the server
+in any way it sees fit. When exposing an RDF database via SDshare, a
+natural set of collections to use is to let each graph be a
+collection, but any set of collections is allowed.</p>
+
+<p>A <dfn>snapshot</dfn> is a complete representation of a collection
+as it existed at some point in time.</p>
+</div>
+  
   <div class="section">
     <h2 class="title">Protocol</h2>
 
     <div class="section">
-        <h3 class="title">Terminology</h3>
-        <p>
-        <ul>
-          <li>Server Node: A source of resource descriptions that hosts both feed and data services so other nodes can observe and retrieve the state of the collection being managed.</li>
-          <li>Client Node: A node that subscribes to one or more server nodes and implements the update semantics defined in this protocol.</li>
-        </ul>
-        </p>    
-    </div>
-
-    <div class="section">
-        <h3 class="title">Server Contract</h3>
-        <p>A server node is responsible for providing information about the state of the resource collection(s) it is managing. It provides a number of feeds that allow clients to see which aspects of the collection have changed over time and data services that allow a client to fetch complete representations of the collection or individual resource representations in order to update a client environment.
-        </p>
-    </div>
-
-    <div class="section">
-        <h3 class="title">Feeds & Data Services</h3>
+        <h3 class="title">Server Role</h3>
         <p>A compliant server will provide the following Atom 1.0 feeds, resource representation data services and snapshot representation data services.</p>
 
         <div class="section">
             <h4 class="title">Overview Feed</h4>
-            <p>The overview feed lists all collections of resource descriptions that are being managed by the server.</p>
 
-            <p>The collections feed comprises a feed consisting of 0 - N feed items. Each feed item represents a collection of resource descriptions that are being exposed by this server.</p>
-
-            <p>Each collection feed item is required to have the mandatory ATOM feed item properties and MUST contain:
+            <p>The overview feed lists all collections exposed by the
+            server, containing one entry per collection. Each entry
+            MUST contain:</p>
+            
             <ul>
-                <li>A link element with the following attributes; rel='http://www.egovpt.org/sdshare/collectionfeed', type='application/atom+xml' and href whose value links to the collection feed for that collection.</li>
-                <li>An updated element whose value is the date time of the most recently updated item being exposed by the collection.</li>
-            </ul>            
-            </p>
+                <li>A link element with the following attributes;
+                rel='http://www.egovpt.org/sdshare/collectionfeed',
+                type='application/atom+xml' and href whose value links
+                to the collection feed for that collection.</li>
 
+                <li>An <tt>updated</tt> element whose value is the
+                date time of the most recently updated item being
+                exposed by the collection.</li>
+            </ul>            
+            
             <pre>            
 Example: 
 
@@ -178,11 +192,19 @@ Example response body:
         <div class="section">
             <h4 class="title">Collection Feed</h4>   
         
-            <p>A collection feed is a feed for a specified collection of resource descriptions. A feed of this kinds lists exactly two entries, one entry linking to a snapshots feed and one to an updates feed.</p>
+            <p>A collection feed is a feed representing a collection
+            exposed by the server. A feed of this kind lists exactly
+            two entries, one entry linking to a snapshots feed and one
+            to an updates feed.</p>
             
             <p>
-The Atom payload of the response contains the two entries, one that links to a feed with all snapshots of the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/snapshotsfeed), and another one that links to an Atom feed that lists updates to the resources in the collection (rel-attribute of the link is http://www.egovpt.org/sdshare/fragmentsfeed). Optionally, both links can be duplicated in the entries with rel-attributes that have the value alternate. This can help some Atom feed readers to correctly display the links.      </p>
-
+The Atom payload of the response contains two entries, one that links
+to a snapshot feed for the collection (the link relation is
+<tt>http://www.egovpt.org/sdshare/snapshotsfeed</tt>), and another to
+the resources feed of the collection (the link relation is
+<tt>http://www.egovpt.org/sdshare/fragmentsfeed</tt>). To conform with
+the Atom specification both links must be duplicated with link
+relation <tt>alternate</tt>.</p>
 
             <pre>
 Example Http request for http://sdshare.org:
@@ -223,8 +245,18 @@ GET /sdshare/collections/egov
 
         <div class="section">
             <h4 class="title">Snapshots Feed</h4>
-            <p>A snapshot is the complete RDF data set for a collection at some point in time. The snapshots feed lists all the snapshots that are exposed by this collection. Each entry in the feed represents a single snapshot. The entry must contain a link element that has a rel attribute with value 'http://www.egovpt.org/sdshare/snapshot', a type attribute whose value is 'application/rdf+xml' or 'plain/text+nt' or '...'. It must also have an href attribute that links to the data for the snapshot. The item's updated element should reflect the datetime when the snapshot was taken.</p>
 
+            <p>The snapshots feed lists all the snapshots of a
+            collection that are exposed by this server. Each entry in
+            the feed represents a single snapshot. The entry must
+            contain at least one link element with a link relation 
+            of <tt>'http://www.egovpt.org/sdshare/snapshot'</tt> and a
+            <tt>type</tt> attribute specifying the format of the
+            snapshot. It must also have an <tt>href</tt> attribute
+            that links to the data for the snapshot. The item's
+            <tt>updated</tt> element should reflect the time when the
+            snapshot was taken.</p>
+            
             <pre>
 Example Http-request
 Server: http://wwww.sdshare.org
@@ -261,6 +293,10 @@ Example Response:
         <div class="section">
             <h4>Resources Feed</h4>
 
+<p class=ednote>This is an old-style definintion, from before we
+  introduced the conceptual model. Will update if new style is
+  approved.</p>
+            
 <p>The resources feed is an Atom feed. The entries of the feed list
 resources that have changed in a given time period. The order of the
 entries is undefined.</p>

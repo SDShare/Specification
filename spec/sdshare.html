@@ -4,15 +4,21 @@ body {
   width: 660px;
   margin-top: 50pt;
   margin-left: 50pt;
+  counter-reset: h2 h3 h4;
 }
 h2:before {
     counter-increment: h2;
     content: counter(h2) ". ";
+}
+h2 {
     counter-reset: h3 h4;
 }
 h3:before {
     counter-increment: h3;
     content: counter(h2) "." counter(h3) ". ";
+    counter-reset: h4;
+}
+h3 {
     counter-reset: h4;
 }
 h4:before {
@@ -21,6 +27,14 @@ h4:before {
 }
 pre {
   background-color: lightgray;
+}
+.ednote:before {
+  content: "Ed. Note: ";
+  font-weight: bold;
+}
+.ednote {
+  font-style: italic;
+  background-color: palegreen;
 }
 </style>
 
@@ -248,7 +262,8 @@ Example Response:
             <h4>Resources Feed</h4>
 
 <p>The resources feed is an Atom feed. The entries of the feed list
-resources that have changed in a given time period.</p>
+resources that have changed in a given time period. The order of the
+entries is undefined.</p>
 
 <p>The Atom specification requires all entries to contain
 an <tt>id</tt> element, which must be unique. SDshare adds no further
@@ -317,6 +332,9 @@ information).
         <li>application/rdf+xml: Serialization as RDF/XML
     </ul>
 
+    <p>The resource representation is produced as defined by the
+    fragment generation algorithm in section 4.5.1.</p>
+    
 <p>As the number of changes made to the collection grows, the number
 of entries in the resources feed can become very large. To avoid
 returning excessively long responses, the server can page the
@@ -329,6 +347,7 @@ required.</p>
 
         <div class="section">
             <h4 class="title">Resource Description Service</h4>        
+
             <p>The fragment data service is a service that returns a specified resource.</p>
 
             <pre>
@@ -388,28 +407,6 @@ ACCEPT-TYPE:plain/nt+text
             <p>Clients wishing to update their local collection as new changes occur on the server, should process the fragments feed for the appropriate collection. The client MUST record the date and time that it last updated its local copy and then find all Atom entries that have an updated value after that time. For each of these, in time order of most distant to most recent it should apply the following update algorithm.</p>
         </div>
 
-
-        <div class="section">
-            <h4>The Fragment Update Algorithm</h4>
-            <p>
-            <pre>
-            Bind SI to each TopicSI element in the Atom entry E.
-
-    Let SP be the value of the ServerSrcLocatorPrefix element in the Atom feed F
-    feed F contains E
-    entry E references fragment TF
-    Let LC be the local collection
-    Let T be the topic in LC that has a subjectidentifier that matches SI
-    For all names, occurrences and associations in which T plays a role, TMC
-
-        Delete all SrcLocators of TMC that begin with SP
-        If the count of srclocators on TMC = 0 then delete TMC 
-    Merge in the fragment TF using SP as the base all generated source locators.
-
-    NOTE: To deprecate a topic publish an empty topic
-
-    NOTE: The understanding is that each name, occurrence and association created or modified during the update will in its internal, TMDM-conformant representation have or get item identifiers that act as source locators and start with the ServerSrcLocatorPrefix. 
-            </pre>
             </section>
      </section>
 
@@ -437,29 +434,17 @@ subject.</p>
 <div class="section">
 <h4>The Fragment Update Algorithm</h4>
 
-<ul>
-    <li>Let SP be the value of the ServerSrcLocatorPrefix element in the Atom feed F
-    <li>feed F contains E
-    <li>entry E references fragment TF
-    <li>Let LC be the local collection
-    <li>Let R be the resource in LC that has a Resource URI that matches the SI
-    <li>For all statements where R is either the Subject or the Object
-    of the statement STAT
-    <ul>
-        <li>Delete all SrcLocators of STAT that begin with SP
-        <li>If the count of srclocators on STAT = 0 then delete TMC
-    </ul>
-    <li>Merge in the fragment TF using SP as the base all generated
-    source locators.
-</ul>      
+<p>To update an RDF repository with the new fragment for the given
+resource:</p>
 
-<p>The above algorithm talks about the SrcLocators of a
-Statement. This is not an inherent property in the RDF data
-model. This is a required extension for the RDF payload. All
-Statements are defined as a subtype of Resource. Thus each RDF
-statement (as a Resource) MUST have a list property that is a set of
-URI's. This property is called 'SrcLocators' and is used as described
-above.</p>
+<ul>
+  <li>Delete all statements in which the resource is the subject from
+  the graph,
+  <li>Insert the entire fragment into the same graph.
+</ul>
+
+<p class=ednote>This doesn't handle blank nodes. Fix!</p>
+<p class=ednote>We also haven't said what graph to do this on.</p>
 </div>
 
       </div>

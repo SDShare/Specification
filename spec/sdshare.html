@@ -38,15 +38,9 @@ pre {
 }
 </style>
 
-<<<<<<< HEAD
-<head>
-    <title>SDShare - A Protocol for the syndication of resource descriptions</title>
-</head>
-=======
 <header>
     <title>SDShare - A Protocol for the Syndication of Resource Descriptions</title>
 </header>
->>>>>>> b9281a9c9c11ad3c887e4c875e05245484b3007d
 
 <body>
   <div class="header">
@@ -150,11 +144,7 @@ as it existed at some point in time.</p>
             
             <ul>
                 <li>A link element with the following attributes;
-<<<<<<< HEAD
                 rel='http://www.sdshare.org/2012/core/collectionfeed',
-=======
-                rel='http://www.sdshare.org/collectionfeed',
->>>>>>> b9281a9c9c11ad3c887e4c875e05245484b3007d
                 type='application/atom+xml' and href whose value links
                 to the collection feed for that collection.</li>
             </ul>            
@@ -162,40 +152,19 @@ as it existed at some point in time.</p>
             <p>To conform with the Atom specification the link must also be duplicated with link relation <tt>alternate</tt>.</p>
 
             <pre>            
-<<<<<<< HEAD
-Example: 
-
-Http request for server http://example-service.org:
-GET /collections
-=======
 Example Request URL: 
 <b>http://www.example.org/collections</b>
->>>>>>> b9281a9c9c11ad3c887e4c875e05245484b3007d
 
 Example Response Body:
 
 &lt;?xml version="1.0" encoding="utf-8"?>
    &lt;feed xmlns="http://www.w3.org/2005/Atom">
-<<<<<<< HEAD
-   &lt;title>Collection managed by wwww.sdshare.org&lt;/title>
-   &lt;link href="http://example-service.org/collections"/>
-=======
    &lt;title>Collection managed by www.example.org&lt;/title>
    &lt;link href="http://www.example.org/collections"/>
->>>>>>> b9281a9c9c11ad3c887e4c875e05245484b3007d
    &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
    &lt;author>
      &lt;name>SDShare Server&lt;/name>
    &lt;/author>
-<<<<<<< HEAD
-   &lt;id>http://example-service.org/collections&lt;/id>
-   &lt;!-- collection entry -->
-   &lt;entry>
-     &lt;title>eGovernment Resources Collection&lt;/title>
-     &lt;!-- a link to the collection atom feed -->
-     &lt;link rel="http://www.sdshare.org/2012/core/collectionfeed" type="application/atom+xml"
-           href="http://example-service.org/collections/egov"/>
-=======
    &lt;id>http://www.example.org/collections&lt;/id>
    &lt;!-- collection entry -->
    &lt;entry>
@@ -204,8 +173,6 @@ Example Response Body:
      &lt;!-- a link to the collection feed -->
 <b>     &lt;link rel="http://www.sdshare.org/collectionfeed" type="application/atom+xml"
            href="http://wwww.example.org/collections/collection-one"/> </b>
-
->>>>>>> b9281a9c9c11ad3c887e4c875e05245484b3007d
      &lt;id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id>
      &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
      &lt;summary>A set of RDF resources describing a taxonomy.&lt;/summary>
@@ -233,22 +200,12 @@ to a snapshot feed for the collection (the link relation is
 <tt>http://www.sdshare.org/2012/core/snapshotsfeed</tt>), and another to
 the resources feed of the collection (the link relation is
 <tt>http://www.sdshare.org/2012/core/fragmentsfeed</tt>). To conform with
-=======
-<tt>http://www.sdshare.org/snapshotsfeed</tt>), and another to
-the resources feed of the collection (the link relation is
-<tt>http://www.sdshare.org/fragmentsfeed</tt>). To conform with
->>>>>>> b9281a9c9c11ad3c887e4c875e05245484b3007d
 the Atom specification both links must be duplicated with link
 relation <tt>alternate</tt>.</p>
 
             <pre>
-<<<<<<< HEAD
-Example Http request:
-GET http://example-service.org/collections/egov
-=======
 Example Request Url:
 http://www.example.org/collectons/collection-one
->>>>>>> b9281a9c9c11ad3c887e4c875e05245484b3007d
 
 Example Response:
 &lt;feed xmlns="http://www.w3.org/2005/Atom">
@@ -266,17 +223,10 @@ Example Response:
     &lt;author>
       &lt;name>SDShare Server&lt;/name>
     &lt;/author>
-<<<<<<< HEAD
-    &lt;link href="http://sdshare.org/sdshare/collections/egov/updates" 
-             rel="alternate" type="application/atom+xml"/>
-    &lt;link href="http://sdshare.org/sdshare/collections/egov/updates" 
-             rel="http://www.egovpt.org/sdshare/fragmentsfeed" type="application/atom+xml"/>
-=======
     &lt;link href="http://www.example.org/collectons/collection-one/fragments" rel="alternate" 
                                                                                type="application/atom+xml"/>
     &lt;link href="http://www.example.org/collectons/collection-one/fragments" rel="http://www.sdshare.org/fragmentsfeed" 
                                                                                type="application/atom+xml"/>
->>>>>>> b9281a9c9c11ad3c887e4c875e05245484b3007d
   &lt;/entry>
   &lt;entry>
     &lt;title>Collection Snapshots&lt;/title>
@@ -285,17 +235,10 @@ Example Response:
     &lt;author>
       &lt;name>SDShare Server&lt;/name>
     &lt;/author>
-<<<<<<< HEAD
-    &lt;link href="http://sdshare.org/sdshare/collections/egov/snapshots" 
-             rel="alternate" type="application/atom+xml"/>
-    &lt;link href="http://sdshare.org/sdshare/collections/egov/snapshots" 
-             rel="http://www.egovpt.org/sdshare/snapshotsfeed" type="application/atom+xml"/>
-=======
     &lt;link href="http://www.example.org/collectons/collection-one/snapshots" rel="alternate"
                                                                                type="application/atom+xml"/>
     &lt;link href="http://www.example.org/collectons/collection-one/snapshots" rel="http://www.sdshare.org/snapshotsfeed" 
                                                                                type="application/atom+xml"/>
->>>>>>> b9281a9c9c11ad3c887e4c875e05245484b3007d
   &lt;/entry>
 &lt;/feed>
             

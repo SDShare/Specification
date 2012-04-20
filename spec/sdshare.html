@@ -1,7 +1,7 @@
 ﻿<html>
 <style>
 body {
-  width: 660px;
+  width: 960px;
   margin-top: 50pt;
   margin-left: 50pt;
   counter-reset: h2 h3 h4;
@@ -38,9 +38,9 @@ pre {
 }
 </style>
 
-<header>
+<head>
     <title>SDShare - A Protocol for the syndication of resource descriptions</title>
-</header>
+</head>
 
 <body>
   <div class="header">
@@ -76,7 +76,7 @@ pre {
             10 February 2004
            </li>
         <li>RFC 5005: <a href="http://www.ietf.org/rfc/rfc5005.txt"
-            >Feed Paging and Archiving</a>, IETF Standard, September 2007
+            >Feed Paging and Archiving</a>, IETF Standard, September 2007</li>
     </ul>
   </div>
 
@@ -142,19 +142,17 @@ as it existed at some point in time.</p>
             
             <ul>
                 <li>A link element with the following attributes;
-                rel='http://www.egovpt.org/sdshare/collectionfeed',
+                rel='http://www.sdshare.org/2012/core/collectionfeed',
                 type='application/atom+xml' and href whose value links
                 to the collection feed for that collection.</li>
-
-                <li>An <tt>updated</tt> element whose value is the
-                date time of the most recently updated item being
-                exposed by the collection.</li>
             </ul>            
             
+            <p>To conform with the Atom specification the link must also be duplicated with link relation <tt>alternate</tt>.</p>
+
             <pre>            
 Example: 
 
-Http request for server http://sdshare.org:
+Http request for server http://example-service.org:
 GET /collections
 
 The Atom payload of the overview feed contains an entry for each separate resource collection. 
@@ -165,18 +163,18 @@ Example response body:
 &lt;?xml version="1.0" encoding="utf-8"?>
    &lt;feed xmlns="http://www.w3.org/2005/Atom">
    &lt;title>Collection managed by wwww.sdshare.org&lt;/title>
-   &lt;link href="http://www.sdshare.org/sdshare/collections"/>
+   &lt;link href="http://example-service.org/collections"/>
    &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
    &lt;author>
      &lt;name>SDShare Server&lt;/name>
    &lt;/author>
-   &lt;id>http://www.sdshare.org/sdshare/collections&lt;/id>
+   &lt;id>http://example-service.org/collections&lt;/id>
    &lt;!-- collection entry -->
    &lt;entry>
      &lt;title>eGovernment Resources Collection&lt;/title>
      &lt;!-- a link to the collection atom feed -->
-     &lt;link rel="http://www.egovpt.org/sdshare/collectionfeed" type="application/atom+xml"
-           href="http://sdshare.org/sdshare/collections/egov"/>
+     &lt;link rel="http://www.sdshare.org/2012/core/collectionfeed" type="application/atom+xml"
+           href="http://example-service.org/collections/egov"/>
      &lt;id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id>
      &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
      &lt;summary>A set of RDF resources describing an eGovernment classification scheme.&lt;/summary>
@@ -200,15 +198,15 @@ Example response body:
             <p>
 The Atom payload of the response contains two entries, one that links
 to a snapshot feed for the collection (the link relation is
-<tt>http://www.egovpt.org/sdshare/snapshotsfeed</tt>), and another to
+<tt>http://www.sdshare.org/2012/core/snapshotsfeed</tt>), and another to
 the resources feed of the collection (the link relation is
-<tt>http://www.egovpt.org/sdshare/fragmentsfeed</tt>). To conform with
+<tt>http://www.sdshare.org/2012/core/fragmentsfeed</tt>). To conform with
 the Atom specification both links must be duplicated with link
 relation <tt>alternate</tt>.</p>
 
             <pre>
-Example Http request for http://sdshare.org:
-GET /sdshare/collections/egov
+Example Http request:
+GET http://example-service.org/collections/egov
 
 &lt;feed xmlns="http://www.w3.org/2005/Atom">
   &lt;title>eGov Resource Collection&lt;/title>
@@ -225,8 +223,10 @@ GET /sdshare/collections/egov
     &lt;author>
       &lt;name>SDShare Server&lt;/name>
     &lt;/author>
-    &lt;link href="http://sdshare.org/sdshare/collections/egov/updates" rel="alternate" type="application/atom+xml"/>
-    &lt;link href="http://sdshare.org/sdshare/collections/egov/updates" rel="http://www.egovpt.org/sdshare/fragmentsfeed" type="application/atom+xml"/>
+    &lt;link href="http://sdshare.org/sdshare/collections/egov/updates" 
+             rel="alternate" type="application/atom+xml"/>
+    &lt;link href="http://sdshare.org/sdshare/collections/egov/updates" 
+             rel="http://www.egovpt.org/sdshare/fragmentsfeed" type="application/atom+xml"/>
   &lt;/entry>
   &lt;entry>
     &lt;title>eGov Collection Snapshots&lt;/title>
@@ -235,8 +235,10 @@ GET /sdshare/collections/egov
     &lt;author>
       &lt;name>SDShare Server&lt;/name>
     &lt;/author>
-    &lt;link href="http://sdshare.org/sdshare/collections/egov/snapshots" rel="alternate" type="application/atom+xml"/>
-    &lt;link href="http://sdshare.org/sdshare/collections/egov/snapshots" rel="http://www.egovpt.org/sdshare/snapshotsfeed" type="application/atom+xml"/>
+    &lt;link href="http://sdshare.org/sdshare/collections/egov/snapshots" 
+             rel="alternate" type="application/atom+xml"/>
+    &lt;link href="http://sdshare.org/sdshare/collections/egov/snapshots" 
+             rel="http://www.egovpt.org/sdshare/snapshotsfeed" type="application/atom+xml"/>
   &lt;/entry>
 &lt;/feed>
             

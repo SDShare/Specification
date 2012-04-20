@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<style>
+body {
+  width: 960px;
+  margin-top: 50pt;
+  margin-left: 50pt;
+}
+</style>
+
+<head>
+    <title>SDShare - A Protocol for the Syndication of Resource Descriptions</title>
+</head>
+<body>
+    <h1>SDShare - A Protocol for the Syndication of Resource Descriptions</h1>
+
+    <p>SDShare is a stream based protocol for exposing and consuming data in a single standardised way. It uses Atom and RDF as building blocks 
+    to allow servers to expose collections of data, and clients to process and update local data stores with copies of the data.</p>
+
+    <p>RDF provides a very flexible data model that allows data of any form to be represented. The existing RDF family of standards define how to serialise the model, how to query the model (SPARQL) and how to update the model (SPARQL Update). However, there are no protocols that define how a machine can both expose and consume RDF in a system of interconnected nodes. A classic use case for this requirement is where one RDF server contains a collection of master data and another RDF system wishes to use that data. The master data will change over time. This protocol defines how the master data server can publish the changes to the resources it manages and how a client can consume them to ensure it is in sync.</p>    
+
+    <h2>The Specification</h2>
+
+    <p>The specificiation is developed in an open process and the specification itself is made available under the following <a href="License.html">creative commons</a> license.</p>
+
+    <p>The <a href="spec/sdshare.html">SDShare V1.0</a> specification is now in draft. Comments can be sent to editors, Graham Moore (gra at brightstardb.com) and Lars Marius Garshol (lars.garshol at bouvet.no). The work itself can be followed on <a href="https://github.com/gra-moore/SDShare">github</a>.</p>
+
+    <h2>Use Cases, Implementations, Background, Comments, Updates</h2>
+
+    <p>The <a href="blog/index.html">SDShare Blog</a> is used to provide more information about the specification.</p>
+
+    <hr />
+    <p>Last updated 20.4.2012</p>
+</body>
+</html>

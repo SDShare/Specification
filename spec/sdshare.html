@@ -45,9 +45,9 @@ pre {
 <body>
   <div class="header">
     <h1 class="title">SDShare - A Protocol for the Syndication of Resource Descriptions</h1>
-    <div class="version">Version 1.0 (in progress)</div>
+    <div class="version">Version 1.0 Draft</div>
     <div class="date">Date: 2012-02-17</div>
-    <div class="author">Author: Graham Moore</div>
+    <div class="author">Author: Graham Moore (gra@brightstardb.com, @gra_moore)</div>
     <div class="author">Author: Lars Marius Garshol</div>
   </div>
 
@@ -171,7 +171,7 @@ Example Response Body:
      &lt;title>A Resource Collection&lt;/title>
 
      &lt;!-- a link to the collection feed -->
-<b>     &lt;link rel="http://www.sdshare.org/collectionfeed" type="application/atom+xml"
+<b>     &lt;link rel="http://www.sdshare.org/2012/core/collectionfeed" type="application/atom+xml"
            href="http://wwww.example.org/collections/collection-one"/> </b>
      &lt;id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id>
      &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
@@ -196,7 +196,6 @@ Example Response Body:
             <p>
 The Atom content of the response contains two entries, one that links
 to a snapshot feed for the collection (the link relation is
-<<<<<<< HEAD
 <tt>http://www.sdshare.org/2012/core/snapshotsfeed</tt>), and another to
 the resources feed of the collection (the link relation is
 <tt>http://www.sdshare.org/2012/core/fragmentsfeed</tt>). To conform with
@@ -225,7 +224,7 @@ Example Response:
     &lt;/author>
     &lt;link href="http://www.example.org/collectons/collection-one/fragments" rel="alternate" 
                                                                                type="application/atom+xml"/>
-    &lt;link href="http://www.example.org/collectons/collection-one/fragments" rel="http://www.sdshare.org/fragmentsfeed" 
+    &lt;link href="http://www.example.org/collectons/collection-one/fragments" rel="http://www.sdshare.org/2012/core/fragmentsfeed" 
                                                                                type="application/atom+xml"/>
   &lt;/entry>
   &lt;entry>
@@ -237,7 +236,7 @@ Example Response:
     &lt;/author>
     &lt;link href="http://www.example.org/collectons/collection-one/snapshots" rel="alternate"
                                                                                type="application/atom+xml"/>
-    &lt;link href="http://www.example.org/collectons/collection-one/snapshots" rel="http://www.sdshare.org/snapshotsfeed" 
+    &lt;link href="http://www.example.org/collectons/collection-one/snapshots" rel="http://www.sdshare.org/2012/core/snapshotsfeed" 
                                                                                type="application/atom+xml"/>
   &lt;/entry>
 &lt;/feed>
@@ -252,7 +251,7 @@ Example Response:
             collection that are exposed by this server. Each entry in
             the feed represents a single snapshot. The entry must
             contain at least one link element with a link relation 
-            of <tt>'http://www.sdshare.org/snapshot'</tt> and a
+            of <tt>'http://www.sdshare.org/2012/core/snapshot'</tt> and a
             <tt>type</tt> attribute specifying the format of the
             snapshot. It must also have an <tt>href</tt> attribute
             that links to the data for the snapshot. The entry's
@@ -280,7 +279,7 @@ Example Response:
      &lt;!-- a link to the snapshot RDF -->
      &lt;link rel="alternate" type="application/rdf+xml"
            href="http://www.example.org/collectons/collection-one/snapshots/0001"/>
-     &lt;link rel="http://www.sdshare.org/snapshot" type="application/rdf+xml"
+     &lt;link rel="http://www.sdshare.org/2012/core/snapshot" type="application/rdf+xml"
            href="http://www.example.org/collectons/collection-one/snapshots/0001"/>
      &lt;id>60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
    &lt;/entry>

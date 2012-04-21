@@ -262,6 +262,10 @@ Example Response:
             that links to the data for the snapshot. The entry's
             <tt>updated</tt> element should reflect the time when the
             snapshot was taken.</p>
+
+            <p>In cases where the amount of data in the snapshot is very large the server MAY expose an additional link to a 
+            chunked snapshot feed. The chunked snapshot feed will contain a list of atom entries where each one links to part of the data. The link 
+            relation on this link must be <tt>http://www.sdshare.org/2012/core/chunked-snapshot</tt> and the type attribute <tt>application/atom+xml</tt>.</p>
             
             <pre>
 Example Request Url: 
@@ -288,6 +292,12 @@ Example Response:
      &lt;link rel="http://www.sdshare.org/2012/core/snapshot"
               type="application/rdf+xml"
               href="http://www.example.org/collectons/collection-one/snapshots/0001"/>
+
+    <!-- link to the chunked snapshots feed -->
+     &lt;link rel="http://www.sdshare.org/2012/core/chunked-snapshot"
+              type="application/rdf+xml"
+              href="http://www.example.org/collectons/collection-one/snapshots/0001/chunks"/>
+
      &lt;id>60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
    &lt;/entry>
    &lt;!-- an entry follows for each RDF snapshot being exposed.
@@ -296,6 +306,53 @@ Example Response:
  &lt;/feed>    
             </pre>
         </div>
+
+       <div class="section">
+            <h4 class="title">Chunked Snapshot Feed</h4>
+
+            <p>The chunked snapshot feed contains links to all the chunks that comprise the snapshot. It is up to the server to decide the amount of data in each snapshot.</p>
+
+           <p>Each entry in the feed represents a subset of the snapshot. The entry must
+            contain at least one link element with a link relation 
+            of <tt>http://www.sdshare.org/2012/core/snapshot-component</tt> and a
+            <tt>type</tt> attribute specifying the format of the
+            snapshot. It must also have an <tt>href</tt> attribute
+            that links to the data.</p>
+
+            <pre>
+Example Request Url: 
+<b>http://www.example.org/collectons/collection-one/snapshots/0001/chunks</b>
+
+Example Response:
+&lt;?xml version="1.0"?>
+ &lt;feed xmlns="http://www.w3.org/2005/Atom" xmlns:sdshare="http://www.sdshare.org">
+   &lt;title>The Chunked Snapshots of the Resource Collection&lt;/title>
+   &lt;subtitle>A list of all chunks comprising the snapshots of this collection&lt;/subtitle>
+   &lt;author>
+     &lt;name>SDShare Server&lt;/name>
+   &lt;/author>
+   &lt;updated>2008-07-17T12:15:07.020071Z&lt;/updated>
+   &lt;id>http://www.example.org/collectons/collection-one/snapshots/0010/chunks&lt;/id>
+   &lt;link rel="self" href="http://www.example.org/collectons/collection-one/snapshots/0001/chunks"/>
+   &lt;entry>
+     &lt;title>Snapshot Chunks 2008-07-17&lt;/title>
+     &lt;updated>2008-07-17T14:04:42.205299Z&lt;/updated>
+     &lt;!-- a link to the snapshot component RDF -->
+     &lt;link rel="alternate" 
+              type="application/rdf+xml"
+              href="http://www.example.org/collectons/collection-one/snapshots/0001/part-1"/>
+     &lt;link rel="http://www.sdshare.org/2012/core/snapshot-component"
+              type="application/rdf+xml"
+              href="http://www.example.org/collectons/collection-one/snapshots/0001/part-1"/>
+
+     &lt;id>60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
+   &lt;/entry>
+   &lt;!-- an entry follows for each snapshot component.
+                ...
+   -->
+ &lt;/feed>    
+            </pre>
+       </div>
 
         <div class="section">
             <h4>Fragments Feed</h4>
@@ -395,11 +452,15 @@ required.</p>
         <div class="section">
             <h4>Initialisation</h4>
             <p>When a client first wants to syncronize with a server it can use the feeds provided to locate the collection of interest, retrieve a snapshot and import it into the local collection it is managing.</p>
+            <p>In the case where the server exposes a snapshot chunked feed, the client should use this. The client should access the chunked feed and for each entry in the feed use the approperiate link to retrieve the snapshot chunk and load it into the local collection.</p>
         </div>
       
         <div class="section">
             <h4>A Clean Replacement</h4>
             <p>If a client has a local collection that contains resource descriptions from more than one collection and wants to fetch and update the latest collection snapshot from ONE source then it MUST do the following. Delete the local collection, fetch the snapshot, import the snapshot into the local collection.</p>
+
+            <p>In the case where the server exposes a snapshot chunked feed, the client should use this. The client should access the chunked feed and for each entry in the feed use the approperiate link to retrieve the snapshot chunk and load it into the local collection.</p>
+
         </div>
 
         <div class="section">
@@ -421,6 +482,8 @@ required.</p>
 
                 <p>The client is responsible for mapping remote collections to specific local graphs.</p>
             </div>
+
+            <p>In the case where the fragments feed is paged, as described in Atom Specification 3.3, then the client should follow the next link and then process al items as described above.</p>
         </div>
     </div>
 

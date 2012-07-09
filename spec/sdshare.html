@@ -417,17 +417,19 @@ entries is undefined.</p>
 created resource. Each entry contains one or more links to the
 resource and the <tt>updated</tt> element contains the time at which
 the resource was updated. Links to the resource must use
-the <tt>alternate</tt> link relationship, and can be in different
-formats identified with the <tt>type</tt> attribute, allowing clients
-to choose their preferred format.</p>
+the <tt>http://www.sdshare.org/2012/core/fragment</tt> link
+relationship, and can be in different formats identified with
+the <tt>type</tt> attribute, allowing clients to choose their
+preferred format. To conform with the Atom specification the link must
+be duplicated with link relation alternate.</p>
 
 <p>This protocol introduces one new Atom extension element called
 'ResourceUri'.
 
-The <tt>&lt;ResourceUri></tt> element indicates to a client which resource is
-being updated from all those present in the resource representation.
-This element MUST occur exactly once as a child element of
-each <tt>entry</tt>.
+The <tt>&lt;ResourceUri></tt> element indicates to a client which
+resource is being updated from all those present in the resource
+representation.  This element MUST occur exactly once as a child
+element of each <tt>entry</tt>.
 </p>
 
 <p>The fragments feed service accepts an optional request parameter
@@ -449,52 +451,64 @@ Atom specification.</p>
     http://www.exmaple.org/collections/collection-one/fragments?since=2011-03-21T14:49:23Z 
 
 <b>Example response body:</b>
-     &lt;feed xmlns="http://www.w3.org/2005/Atom"
-              xmlns:sdshare="http://www.sdshare.org/2012/core/">
-       &lt;title>Fragments feed from the collection&lt;/title>
-       &lt;author>
-         &lt;name>SDShare Server&lt;/name>
-       &lt;/author>
-       &lt;updated>2008-07-17T15:47:17.062211Z&lt;/updated>
-       &lt;id>28C5DBD8-652A-4617-8C4A-C0FFC49B4475&lt;/id>
-       &lt;link rel="self" 
-                href="http://www.exmaple.org/collections/collection-one/fragments?since=2011-03-21T14:49:23Z"/>
-       &lt;entry>
-       &lt;!-- Best practice: a resource's RDFS Label or the resource URI -->
-         &lt;title>Government Spending&lt;/title>
-         &lt;!-- the published date and time of the fragment -->
-         &lt;updated>2008-07-17T15:55:21.971145Z&lt;/updated>
+&lt;feed xmlns="http://www.w3.org/2005/Atom"
+         xmlns:sdshare="http://www.sdshare.org/2012/core/">
+  &lt;title>Fragments feed from the collection&lt;/title>
+  &lt;author>
+    &lt;name>SDShare Server&lt;/name>
+  &lt;/author>
+  &lt;updated>2008-07-17T15:47:17.062211Z&lt;/updated>
+  &lt;id>28C5DBD8-652A-4617-8C4A-C0FFC49B4475&lt;/id>
+  &lt;link rel="self" 
+           href="http://www.exmaple.org/collections/collection-one/fragments?since=2011-03-21T14:49:23Z"/>
+  &lt;entry>
+  &lt;!-- Best practice: a resource's RDFS Label or the resource URI -->
+    &lt;title>Government Spending&lt;/title>
+    &lt;!-- the published date and time of the fragment -->
+    &lt;updated>2008-07-17T15:55:21.971145Z&lt;/updated>
 
-         &lt;!-- the id value is some unique value -->
-         &lt;id>69CD5264-DB78-49c1-A7E4-04EECFA0AA85&lt;/id>
+    &lt;!-- the id value is some unique value -->
+    &lt;id>69CD5264-DB78-49c1-A7E4-04EECFA0AA85&lt;/id>
+    &lt;link rel="http://www.sdshare.org/2012/core/fragment"
+          type="application/rdf+xml"
+href="http://www.exmaple.org/collections/collection-one/fragments?id=http://www.example.org/concepts/governmentspending"/>
          &lt;link rel="alternate" type="application/rdf+xml"
 href="http://www.exmaple.org/collections/collection-one/fragments?id=http://www.example.org/concepts/governmentspending"/>
          
-         <!-- the ResourceUri indicates which resource this representation is for -->
-         &lt;sdshare:ResourceUri>http://www.example.org/concepts/governmentspending&lt;/sdshare:ResourceUri>
-       &lt;/entry>
-       &lt;!-- an entry follows for each changed resouce being exposed                  ...
-       -->
-     &lt;/feed>
-    </pre>
+    &lt;!-- the ResourceUri indicates which resource this representation is for -->
+    &lt;sdshare:ResourceUri>http://www.example.org/concepts/governmentspending&lt;/sdshare:ResourceUri>
+  &lt;/entry>
+  &lt;!-- an entry follows for each changed resouce being exposed
+  ...
+  -->
+&lt;/feed>
+</pre>
 
-    <p>Supported formats for resource representations are:</p>
+<p>Supported formats for resource representations are:</p>
+    
+<ul>
+  <li>application/rdf+xml: Serialization as RDF/XML</li>
+  <li>text/plain+nt: Serialization as RDF/NTriples</li>
+</ul>
 
-    <ul>
-        <li>application/rdf+xml: Serialization as RDF/XML</li>
-        <li>text/plain+nt: Serialization as RDF/NTriples</li>
-    </ul>
+<p>The server is responsible for generating the resource description
+in RDF form when a client access the link provided in the atom
+entry.</p>
 
-    <p>The server is responsible for generating the resource description in RDF form when a client access the link provided in the atom entry.</p>
-    <p>The resource representation is produced by the following fragment generation algorithm:</p>
-    <ol>
-        <li>
-            <p>Include every statement in which the resource is the subject.</p>
-        </li>
-        <li>
-            <p>For all selected statements if any of the statement objects are blank nodes then include in the fragment all statements where the object blank node is a subject of a statement. Repeat recursively.</p>
-        </li>
-    </ol>
+<p>The resource representation is produced by the following fragment
+generation algorithm:</p>
+
+<ol>
+  <li>
+    <p>Include every statement in which the resource is the subject.</p>
+  </li>
+  <li>
+    <p>For all selected statements, if any of the statement objects
+    are blank nodes, then include in the fragment all statements where
+    the object blank node is the subject of a statement. Repeat
+    recursively.</p>
+  </li>
+</ol>
     
 <p>As the number of changes made to the collection grows, the number
 of entries in the resources feed can become very large. To avoid
@@ -572,7 +586,3 @@ then process all items as described above.</p>
 </div>
 </body>
 </html>    
-
-
-
-

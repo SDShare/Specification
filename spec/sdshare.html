@@ -401,13 +401,14 @@ http://example.org/collections/collection-one/snapshots/0001/chunks
 <div class="section">
 <h4>Fragments Feed</h4>
             
-<p>The fragments feed is an Atom listing resources that have changed
-in a given time period. The order of the entries is undefined.</p>
+<p>The fragments feed is an Atom feed listing resources that have
+changed in a given time period. The order of the entries is
+undefined.</p>
 
 <p>The Atom content contains an entry for each updated, deleted, or
 created resource. Each entry contains one or more links to the
-resource and the <tt>updated</tt> element contains the time at which
-the resource was updated. Links to the resource must use
+fragment and the <tt>updated</tt> element contains the time at which
+the resource was updated. Links to the fragment must use
 the <tt>http://www.sdshare.org/2012/core/fragment</tt> link
 relationship, and can be in different formats identified with
 the <tt>type</tt> attribute, allowing clients to choose their
@@ -423,7 +424,7 @@ as a child element of each <tt>entry</tt>.
 </p>
 
 <p>The fragments feed service MUST accept an optional request
-parameter called <tt>since</tt>. This parameter can be used to specify
+parameter called <tt>since</tt>. This parameter is be used to specify
 that the client only wishes to see entries for fragments produced,
 modified or deleted after the time given in the parameter. The effect
 of this parameter is to remove from the response body <tt>entry</tt>
@@ -437,12 +438,11 @@ include this parameter. Clients must therefore add it to the URL
 themselves should they wish to use it.</p>
 
 <p>As the number of changes made to the collection grows, the number
-of entries in the resources feed can become very large. To avoid
-returning excessively long responses, the server can page the
-resources feed, using the conventions defined in RFC 5005. If the feed
-is paged, each page must contain one link element with the "next"
-relation type. Other link types may also be provided, but this is not
-required.</p>
+of entries in the fragment feed can become very large. To avoid
+returning excessively long responses, the server MAY page the fragment
+feed, using the conventions defined in RFC 5005. If the feed is paged,
+each page MUST contain one link element with the "next" relation type.
+Other link types MAY also be provided.</p>
 
 <pre>
 <b>Example Request URL (with since):</b>
@@ -481,22 +481,18 @@ href="http://example.org/collections/collection-one/fragments?id=2321"/>
 &lt;/feed>
 </pre>
 
-<p>For RDF data, the fragment for a resource R is produced by the
-following algorithm:</p>
+<p>For RDF data, the set of statements S making up the fragment for a
+resource R in a collection corresponding to a graph G is produced by
+the following algorithm:</p>
 
-<ol>
-  <li>
-    <p>Include every statement in which R is the subject.</p>
-  </li>
-  <li>
-    <p>For all selected statements, if any of the statement objects
-    are blank nodes, then include in the fragment all statements where
-    the object blank node is the subject of a statement. Repeat
-    recursively.</p>
-  </li>
-</ol>
+<ul>
+  <li>Include in S all statements in G in which R is the subject.</li>
+  <li>For all statements in S where the object is a blank node B, find
+  all statements with B as the subject, and add those statements to
+  S. Repeat recursively with all B's statements. </li>
+</ul>
 </div>     
-</div> <!-- end 4.3 -->     
+</div> <!-- end 5.1.5 -->     
 
 <div class="section">
 <h3 class="title">Client Role</h3>
@@ -579,16 +575,12 @@ choose which link to follow, based on the <tt>type</tt> attribute.</p>
 
 <p>The link is used to retrieve a set of RDF statements that are the
 new representation of the resource R. We call this set of statements
-S. These statements are to be written to a graph G, determined by the
-client.</p>
+S. These statements are to be written to a graph G, where G is
+determined by the client.</p>
 
 <ul>
-  <li>Find all statements in G in which the R is the subject, call
-  this collection S'.</li>
-  <li>For all statements in S' where the object is a blank node, find
-  all statements with the same blank node as the subject, and add
-  these statements to S'. Repeat recursively with the blank node's
-  statements. </li>
+  <li>Follow the fragment generation algorithm in section 5.1.5 for R
+  in G, and call the resulting set of statements S'</li>
   <li>Delete all statements in S' from G.</li>
   <li>Insert all statements in S into G.</li>
 </ul>

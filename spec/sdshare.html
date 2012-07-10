@@ -26,7 +26,7 @@ h4:before {
     content: counter(h2) "." counter(h3) "." counter(h4) ". ";
 }
 pre {
-  background-color: lightgray;
+  background-color: #EEE;
 }
 .ednote:before {
   content: "Ed. Note: ";
@@ -49,12 +49,14 @@ dt {
   <div class="header">
     <h1 class="title">SDShare - A Protocol for the Syndication of Resource Descriptions</h1>
     <div class="version">Version 1.0 Draft</div>
-    <div class="date">Date: 2012-07-09</div>
+    <div class="date">Date: 2012-07-10</div>
     <div class="author">Author: Graham Moore (gra@brightstardb.com,
       <a href="http://twitter.com/gra_moore">@gra_moore</a>)</div>
     <div class="author">Author: Lars Marius Garshol
-    (larsga@garshol.priv, <a href="http://twitter.com/larsga">@larsga</a>)</div>
-    <div class="link">This document http://www.sdshare.org/spec/sdshare-v1_0.html</div>
+    (larsga@garshol.priv.no,
+      <a href="http://twitter.com/larsga">@larsga</a>)</div>
+    <div class="link">This document:
+      http://www.sdshare.org/spec/sdshare-20120710.html</div>
   </div>
 
 <div class="section">
@@ -70,10 +72,7 @@ resource descriptions so that a local store is in sync.
 </div>
 
 <div class="section">
-<h2>Normative References</h2>
-
-<p>The following lists works upon which this specification is
-dependent.</p>
+<h2>References</h2>
 
 <dl>
   <dt>HTTP
@@ -97,6 +96,10 @@ dependent.</p>
   <dd><a href="http://www.ietf.org/rfc/rfc5005.txt"
          >RFC 5005</a>: Feed Paging and Archiving, IETF Standard,
     September 2007</li>
+  <dt>RFC 2119
+  <dd><a href="http://www.ietf.org/rfc/rfc2119.txt" >RFC 2119</a>: Key
+         words for use in RFCs to Indicate Requirement Levels,
+         IETF, March 1997.</li>
 </dl>
 </div>
 
@@ -115,7 +118,7 @@ time. This protocol defines how the master data server can publish the
 changes to the resources it manages and how a client can consume them
 to ensure it is in sync.</p>
 
-<p>An SDShare server should publish the following hierarchy of Atom
+<p>An SDShare server SHOULD publish the following hierarchy of Atom
 feeds to expose one or more collection(s) of resource descriptions:</p>
       
 <ul>
@@ -148,6 +151,10 @@ to exactly one of the roles (publish-subscribe scenario).</p>
 
 <p>The protocol provides no provision against malicious or broken
 servers. It requires the client to trust all upstream servers.</p>
+
+<p>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in RFC 2119.</p>
 </div>
 
 <div class="section">
@@ -317,7 +324,7 @@ additional link to a chunked snapshot feed, with link relation
 type <tt>application/atom+xml</tt>. The chunked snapshot feed will
 contain a list of atom entries where each one links to part of the
 data.</p>
-            
+           
 <pre>
 <b>Example Request URL:</b>
 http://www.example.org/collections/collection-one/snapshots
@@ -424,12 +431,10 @@ preferred format. To conform with the Atom specification the link must
 be duplicated with link relation alternate.</p>
 
 <p>This protocol introduces one new Atom extension element called
-'ResourceUri'.
-
-The <tt>&lt;ResourceUri></tt> element indicates to a client which
-resource is being updated from all those present in the resource
-representation.  This element MUST occur exactly once as a child
-element of each <tt>entry</tt>.
+<tt>resource</tt>. The <tt>&lt;resource></tt> element indicates to a
+client which resource is being updated from all those present in the
+resource representation.  This element MUST occur exactly once as a
+child element of each <tt>entry</tt>.
 </p>
 
 <p>The fragments feed service accepts an optional request parameter
@@ -452,15 +457,14 @@ Atom specification.</p>
 
 <b>Example response body:</b>
 &lt;feed xmlns="http://www.w3.org/2005/Atom"
-         xmlns:sdshare="http://www.sdshare.org/2012/core/">
+      xmlns:sdshare="http://www.sdshare.org/2012/core/">
   &lt;title>Fragments feed from the collection&lt;/title>
   &lt;author>
     &lt;name>SDShare Server&lt;/name>
   &lt;/author>
   &lt;updated>2008-07-17T15:47:17.062211Z&lt;/updated>
   &lt;id>28C5DBD8-652A-4617-8C4A-C0FFC49B4475&lt;/id>
-  &lt;link rel="self" 
-           href="http://www.exmaple.org/collections/collection-one/fragments?since=2011-03-21T14:49:23Z"/>
+
   &lt;entry>
   &lt;!-- Best practice: a resource's RDFS Label or the resource URI -->
     &lt;title>Government Spending&lt;/title>
@@ -471,25 +475,18 @@ Atom specification.</p>
     &lt;id>69CD5264-DB78-49c1-A7E4-04EECFA0AA85&lt;/id>
     &lt;link rel="http://www.sdshare.org/2012/core/fragment"
           type="application/rdf+xml"
-href="http://www.exmaple.org/collections/collection-one/fragments?id=http://www.example.org/concepts/governmentspending"/>
+href="http://www.exmaple.org/collections/collection-one/fragments?id=2321"/>
          &lt;link rel="alternate" type="application/rdf+xml"
-href="http://www.exmaple.org/collections/collection-one/fragments?id=http://www.example.org/concepts/governmentspending"/>
+href="http://www.exmaple.org/collections/collection-one/fragments?id=2321"/>
          
-    &lt;!-- the ResourceUri indicates which resource this representation is for -->
-    &lt;sdshare:ResourceUri>http://www.example.org/concepts/governmentspending&lt;/sdshare:ResourceUri>
+    &lt;!-- the resource indicates which resource this representation is for -->
+    &lt;sdshare:resource>http://www.example.org/concepts/governmentspending&lt;/sdshare:resource>
   &lt;/entry>
-  &lt;!-- an entry follows for each changed resouce being exposed
+  &lt;!-- an entry follows for each changed resource being exposed
   ...
   -->
 &lt;/feed>
 </pre>
-
-<p>Supported formats for resource representations are:</p>
-    
-<ul>
-  <li>application/rdf+xml: Serialization as RDF/XML</li>
-  <li>text/plain+nt: Serialization as RDF/NTriples</li>
-</ul>
 
 <p>The server is responsible for generating the resource description
 in RDF form when a client access the link provided in the atom
@@ -521,68 +518,114 @@ required.</p>
         </div>     
       </div> <!-- end 4.3 -->     
 
-    <div class="section">
-        <h3 class="title">Client Role</h3>
-        <p>The client role aims to update a local collection with data from a remote collection using the SdShare feeds. A local collection is typically considered to be an RDF graph but can be some other local data store such as a relational database or archiving system. The client often starts off with no local data. It's first job is to retreive a snapshot and load that into the local collection. Thereafter, it waits for resources to appear on the fragments feed. When an entry appears on the fragments feed, the local representation of that resource is deleted and the new representation offered by the server is loaded in its place.</p>
+<div class="section">
+<h3 class="title">Client Role</h3>
 
-        <div class="section">
-            <h4>Initialisation</h4>
-            <p>When a client first wants to syncronize with a server it can use the feeds provided to locate the collection of interest, retrieve a snapshot and import it into the local collection it is managing.</p>
-            <p>In the case where the server exposes a snapshot chunked feed, the client should use this. The client should access the chunked feed and for each entry in the feed use the approperiate link to retrieve the snapshot chunk and load it into the local collection.</p>
-        </div>
-      
-        <div class="section">
-            <h4>A Clean Replacement</h4>
-            <p>If a client has a local collection that contains resource descriptions from more than one collection and wants to fetch and update the latest collection snapshot from ONE source then it MUST do the following. Delete the local collection, fetch the snapshot, import the snapshot into the local collection.</p>
+<p>This section describes the most common operations performed by
+SDShare clients, and some minimal requirements for client behaviour.
+This specification does not restrict what clients may do with the data
+they retrieve.</p>
 
-            <p>In the case where the server exposes a snapshot chunked feed, the client should use this. The client should access the chunked feed and for each entry in the feed use the approperiate link to retrieve the snapshot chunk and load it into the local collection.</p>
+<p>The client generally updates a local collection with data from a
+remote collection using the SDShare feeds. A local collection is
+typically considered to be an RDF graph but can be some other local
+data store such as a relational database or archiving system. The
+client often starts off with no local data, and would then typically
+begin by retreiving a snapshot and loading that into the local
+collection. Thereafter, the client waits for resources to appear on
+the fragments feed. When an entry appears on the fragments feed, the
+local representation of that resource is deleted and the new
+representation offered by the server is loaded in its place.</p>
 
-        </div>
+<p>While processing, the client MUST keep track of the time of the
+last update it has seen, called <tt>t</tt>. Initially, <tt>t</tt> is
+not set.</p>
 
 <div class="section">
-<h4>Ongoing update tracking</h4>
+<h4>Snapshot Processing</h4>
+
+<p>To process a snapshot, the client should first delete the local
+copy of the collection (if it has one). The snapshot can then be
+downloaded from the server, and written into the local collection.</p>
+
+<p>If the server exposes a chunked snapshot feed, the client should
+use it. For each entry in the feed the client should use the
+approperiate link to retrieve the snapshot chunk and load it into the
+local collection.</p>
+
+<p>Once a snapshot has been processed successfully, <tt>t</tt> MUST be
+set to the time in the <tt>updated</tt> element of the snapshot entry
+that was processed.</p>
+
+<p>The chunked snapshot feed and the complete snapshot data MAY be
+produced asynchronously by the server. If this is the case, the server
+may return an HTTP 202 response code, in which case the client MUST
+wait, and retry the same request until it receives an HTTP 200
+response.</p>
+</div>
+
+<div class="section">
+<h4>Fragment Processing</h4>
 
 <p>A client wishing to update its local collection as new changes
 occur on the server, should process the fragments feed for the
-appropriate collection. The client MUST record the date and time that
-it last updated its local copy, and then find all Atom entries that
-have an updated value after that time. This is achieved by using the
-'since' parameter described in section 5.1.4. For each of entry in the
-fragments feed the client should apply the following update
-algorithm.</p>
+appropriate collection. For each fragment, the clients should delete
+its local copy of the fragment, and then replace it with the new
+fragment from the server. Section 5.2.3 describes a simple update
+algorithm for RDF data stores.</p>
+
+<p>In the case where the fragments feed is paged, as described in Atom
+Specification 3.3, then the client should follow the <tt>next</tt>
+links to find the rest of the fragments.</p>
+
+<p>Once all fragments have been successfully processed, the client
+MUST set <tt>t</tt> to the highest (that is, latest) value observed in
+the <tt>updated</tt> element of any fragment entry. If <tt>t</tt> has
+a value when fragment processing begins, the client MUST pass it in
+the <tt>since</tt> parameter described in section 5.1.4.</p>
 </div>
 
 <div class="section">
-<h4>The Fragment Update Algorithm for RDF Stores</h4>
+<h4>A Fragment Update Algorithm for RDF Stores</h4>
 
-<p>Each Atom entry for an updated resource MUST contain a ResourceUri
-element. This element identifies which resource is to be updated. We
-call this resource R.</p>
+<p>Each Atom entry contains a <tt>resource</tt> element, which
+identifies which resource is to be updated. We call this resource
+R.</p>
 
-<p>The Atom entry provides a link to the server that can be used to
-retrieve a set of RDF statements that are the new representation of
-that resource. We call this set of resource statements RS.</p>
+<p>The Atom entry provides a set of links with link relation
+<tt>http://www.sdshare.org/2012/core/fragment</tt> referring to
+different representations of the resource. It is up to the client to
+choose which link to follow, based on the <tt>type</tt> attribute.</p>
+
+<p>The link is used to retrieve a set of RDF statements that are the
+new representation of the resource R. We call this set of statements
+S. These statements are to be written to a graph G, determined by the
+client.</p>
 
 <ul>
-  <li>Find all statements in which the R is the subject from the
-  collection graph, consider this collection RS1</li>
-  <li>Forall statements in RS1 where the object is a blank node, find
-  all statements where the blank node is the subject, add these
-  statements to RS1. Repeat recursively with the blank node
-  statements.</li>
-  <li>Delete all statements in RS1 from the collection graph</li>
-  <li>Insert the entire resource description, RS, retrieved from the
-  server, into the collection graph.</li>
+  <li>Find all statements in G in which the R is the subject, call
+  this collection S'.</li>
+  <li>For all statements in S' where the object is a blank node, find
+  all statements with the same blank node as the subject, and add
+  these statements to S'. Repeat recursively with the blank node's
+  statements. </li>
+  <li>Delete all statements in S' from G.</li>
+  <li>Insert all statements in S into G.</li>
 </ul>
-
-<p>The client is responsible for mapping remote collections to
-specific local graphs.</p>
-
-<p>In the case where the fragments feed is paged, as described in Atom
-Specification 3.3, then the client should follow the next link and
-then process all items as described above.</p>
+</div>
 </div>
 
+<div class="section">
+<h3>Recommended Resource Representation Formats</h3>
+
+<p>Any formats may be used for resource representations, but the
+following are recommended:</p>
+    
+<ul>
+  <li>RDF/XML (application/rdf+xml)</li>
+  <li>NTriples (text/plain)</li>
+</ul>
+</div>
 </div>
 </body>
 </html>    

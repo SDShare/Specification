@@ -112,21 +112,6 @@ data will change over time. This protocol defines how the master data
 server can publish the changes to the resources it manages and how a
 client can consume them to ensure it is in sync.</p>
 
-<p>An SDShare server SHOULD publish the following hierarchy of Atom
-feeds to expose one or more collection(s) of resource descriptions:</p>
-      
-<ul>
-  <li>An overview feed which lists the collections of resource
-  descriptions that the server exposes.</li>
-  <li>A collection feed for each collection of resource descriptions
-  that each links to a corresponding snapshots feed and a
-  corresponding fragments feed.</li>
-  <li>A snapshots feed for each collection. Each snapshot represents
-  the state of a collection at point of time.</li>
-  <li>A fragment feed for each collection. Each feed entry exists to
-  reflect that the referenced resource has been updated. </li>
-</ul>
-
 <p>
 SDShare also specifies how a client should interpret and process these
 feeds in order to consume the resource descriptions. A client that
@@ -166,7 +151,7 @@ as it existed at some point in time.</p>
 <p>A <dfn>resource description</dfn> is a complete representation of a
 single resource that exists in a collection.</p>
 
-<p>A <dfn>fragments feed</dfn> exposes a list of the resource that
+<p>A <dfn>fragments feed</dfn> exposes a list of the resources that
 have been modified in the collection.</p>
 
 </div>
@@ -177,9 +162,24 @@ have been modified in the collection.</p>
 <div class="section">
 <h3 class="title">Server Role</h3>
 
-<p>A compliant server will provide the following Atom 1.0 feeds,
-resource representation data services and snapshot representation data
-services.</p>
+<p>An SDShare server SHOULD publish the following hierarchy of Atom
+feeds to expose one or more collection(s) of resource descriptions:</p>
+      
+<ul>
+  <li>An overview feed which lists the collections of resource
+  descriptions that the server exposes.</li>
+  <li>A collection feed for each collection of resource descriptions
+  that each links to a corresponding snapshots feed and a
+  corresponding fragments feed.</li>
+  <li>A snapshots feed for each collection. Each snapshot represents
+  the state of a collection at point of time.</li>
+  <li>A fragment feed for each collection. Each feed entry exists to
+  reflect that the referenced resource has been updated. </li>
+</ul>
+
+<p>An SDSshare server SHOULD also provide resource descriptions and
+snapshots when requested. Note that these may theoretically be
+provided from a different node.</p>
 
 <div class="section">
 <h4 class="title">Overview Feed</h4>

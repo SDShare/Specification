@@ -178,8 +178,8 @@ feeds to expose one or more collection(s) of resource descriptions:</p>
 </ul>
 
 <p>An SDSshare server SHOULD also provide resource descriptions and
-snapshots when requested. Note that these may theoretically be
-provided from a different node.</p>
+snapshots when requested. Note that these MAY be provided from a
+different node.</p>
 
 <div class="section">
 <h4 class="title">Overview Feed</h4>
@@ -197,26 +197,26 @@ duplicated with link relation <tt>alternate</tt>.</p>
 
 <pre>
 <b>Example Request URL:</b>
-  http://www.example.org/collections
+  http://example.org/collections
 
 <b>Example Response:</b>
    &lt;feed xmlns="http://www.w3.org/2005/Atom">
-   &lt;title>Collection managed by www.example.org&lt;/title>
-   &lt;link href="http://www.example.org/collections"/>
+   &lt;title>Collection managed by example.org&lt;/title>
+   &lt;link href="http://example.org/collections"/>
    &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
    &lt;author>
      &lt;name>SDShare Server&lt;/name>
    &lt;/author>
-   &lt;id>http://www.example.org/collections&lt;/id>
+   &lt;id>http://example.org/collections&lt;/id>
    &lt;!-- collection entry -->
    &lt;entry>
      &lt;title>A Resource Collection&lt;/title>
 
      &lt;!-- a link to the collection feed -->
 <b>     &lt;link rel="http://www.sdshare.org/2012/core/collectionfeed" type="application/atom+xml"
-           href="http://wwww.example.org/collections/collection-one"/> </b>
+           href="http://example.org/collections/collection-one"/> </b>
      &lt;link rel="alternate" type="application/atom+xml"
-           href="http://wwww.example.org/collections/collection-one"/> </b>
+           href="http://example.org/collections/collection-one"/> </b>
      &lt;id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id>
      &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
      &lt;summary>A set of RDF resources describing a taxonomy.&lt;/summary>
@@ -225,64 +225,62 @@ duplicated with link relation <tt>alternate</tt>.</p>
    ...
    -->
  &lt;/feed>
-
-            </pre>
-        </div>
+</pre>
+</div>
 
 <div class="section">
 <h4 class="title">Collection Feed</h4>   
         
-<p>A collection feed is a feed representing a collection exposed by
-the server. A feed of this kind lists exactly two entries, one entry
-linking to a snapshots feed and one to a fragments feed.</p>
+<p>A collection feed lists exactly two entries, one entry linking to a
+snapshots feed and one to a fragments feed.</p>
             
 <p>
-The Atom content of the response MUST contain exactly two entries, one
-that links to a snapshot feed for the collection (the link relation is
+The Atom feed MUST contain exactly two entries, one that links to a
+snapshot feed for the collection (the link relation is
 <tt>http://www.sdshare.org/2012/core/snapshotsfeed</tt>), and another to
-the resources feed of the collection (the link relation is
+the fragment feed of the collection (the link relation is
 <tt>http://www.sdshare.org/2012/core/fragmentsfeed</tt>). To conform with
 the Atom specification both links must be duplicated with link
 relation <tt>alternate</tt>.</p>
 
 <pre>
 <b>Example Request URL:</b>
-  http://www.example.org/collections/collection-one
+  http://example.org/collections/collection-one
 
 <b>Example Response:</b>
   &lt;feed xmlns="http://www.w3.org/2005/Atom">
   &lt;title>A Resource Collection&lt;/title>
   &lt;updated>2008-09-26T11:13:40-01:00&lt;/updated>
-  &lt;id>http://www.example.org/collections/collection-one&lt;/id>
+  &lt;id>http://example.org/collections/collection-one&lt;/id>
   &lt;author>
     &lt;name>SDShare Server&lt;/name>
   &lt;/author>
-  &lt;link href="http://www.example.org/collections/collection-one" rel="self"/>
+
   &lt;entry>
     &lt;title>Collection Updates&lt;/title>
-    &lt;id>http://www.example.org/collections/collection-one/fragments&lt;/a:id>
+    &lt;id>http://example.org/collections/collection-one/fragments&lt;/id>
     &lt;updated>2008-09-11T17:58:39-01:00&lt;/updated>
     &lt;author>
       &lt;name>SDShare Server&lt;/name>
     &lt;/author>
-    &lt;link href="http://www.example.org/collections/collection-one/fragments"
+    &lt;link href="http://example.org/collections/collection-one/fragments"
              rel="alternate" 
              type="application/atom+xml"/>
-    &lt;link href="http://www.example.org/collections/collection-one/fragments" 
+    &lt;link href="http://example.org/collections/collection-one/fragments" 
              rel="<b>http://www.sdshare.org/2012/core/fragmentsfeed</b>" 
              type="application/atom+xml"/>
   &lt;/entry>
   &lt;entry>
     &lt;title>Collection Snapshots&lt;/title>
-    &lt;id>http://www.example.org/collections/collection-one/snapshots&lt;/a:id>
+    &lt;id>http://example.org/collections/collection-one/snapshots&lt;/id>
     &lt;updated>2008-09-11T17:58:39-01:00&lt;/updated>
     &lt;author>
       &lt;name>SDShare Server&lt;/name>
     &lt;/author>
-    &lt;link href="http://www.example.org/collections/collection-one/snapshots"
+    &lt;link href="http://example.org/collections/collection-one/snapshots"
              rel="alternate"
              type="application/atom+xml"/>
-    &lt;link href="http://www.example.org/collections/collection-one/snapshots"
+    &lt;link href="http://example.org/collections/collection-one/snapshots"
              rel="<b>http://www.sdshare.org/2012/core/snapshotsfeed</b>" 
              type="application/atom+xml"/>
   &lt;/entry>
@@ -301,7 +299,9 @@ of <tt>http://www.sdshare.org/2012/core/snapshot</tt> and a
 <tt>type</tt> attribute specifying the format of the snapshot. It must
 also have an <tt>href</tt> attribute that links to the data for the
 snapshot. The entry's <tt>updated</tt> element MUST reflect the time
-when the snapshot was taken.</p>
+when the snapshot was taken. To conform with the Atom specification
+the link must also be duplicated with link
+relation <tt>alternate</tt>.</p>
 
 <p>In cases where the snapshot is very large the server MAY expose an
 additional link to a chunked snapshot feed, with link relation
@@ -312,7 +312,7 @@ data.</p>
            
 <pre>
 <b>Example Request URL:</b>
-http://www.example.org/collections/collection-one/snapshots
+http://example.org/collections/collection-one/snapshots
 
 <b>Example Response:</b>
  &lt;feed xmlns="http://www.w3.org/2005/Atom">
@@ -322,23 +322,23 @@ http://www.example.org/collections/collection-one/snapshots
      &lt;name>SDShare Server&lt;/name>
    &lt;/author>
    &lt;updated>2008-07-17T12:15:07.020071Z&lt;/updated>
-   &lt;id>http://www.example.org/collections/collection-one/snapshots&lt;/id>
-   &lt;link rel="self" href="http://www.example.org/collections/collection-one/snapshots"/>
+   &lt;id>http://example.org/collections/collection-one/snapshots&lt;/id>
+
    &lt;entry>
      &lt;title>Snapshot 2008-07-17&lt;/title>
      &lt;updated>2008-07-17T14:04:42.205299Z&lt;/updated>
      &lt;!-- a link to the snapshot RDF -->
      &lt;link rel="alternate" 
               type="application/rdf+xml"
-              href="http://www.example.org/collections/collection-one/snapshots/0001"/>
+              href="http://example.org/collections/collection-one/snapshots/0001"/>
      &lt;link rel="http://www.sdshare.org/2012/core/snapshot"
               type="application/rdf+xml"
-              href="http://www.example.org/collections/collection-one/snapshots/0001"/>
+              href="http://example.org/collections/collection-one/snapshots/0001"/>
 
      &lt;!-- optional link to the chunked snapshots feed -->
      &lt;link rel="http://www.sdshare.org/2012/core/chunked-snapshot"
               type="application/rdf+xml"
-              href="http://www.example.org/collections/collection-one/snapshots/0001/chunks"/>
+              href="http://example.org/collections/collection-one/snapshots/0001/chunks"/>
 
      &lt;id>60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
    &lt;/entry>
@@ -354,7 +354,7 @@ http://www.example.org/collections/collection-one/snapshots
 
 <p>The chunked snapshot feed contains links to all the chunks that
 comprise the snapshot. It is up to the server to decide the amount of
-data in each snapshot.</p>
+data in each chunk.</p>
 
 <p>Each entry in the feed represents a subset of the snapshot. The
 entry MUST contain at least one <tt>link</tt> element with a link relation
@@ -366,7 +366,7 @@ link relation <tt>alternate</tt>.</p>
 
 <pre>
 <b>Example Request URL:</b>
-http://www.example.org/collections/collection-one/snapshots/0001/chunks
+http://example.org/collections/collection-one/snapshots/0001/chunks
 
 <b>Example Response:</b>
  &lt;feed xmlns="http://www.w3.org/2005/Atom">
@@ -376,22 +376,22 @@ http://www.example.org/collections/collection-one/snapshots/0001/chunks
      &lt;name>SDShare Server&lt;/name>
    &lt;/author>
    &lt;updated>2008-07-17T12:15:07.020071Z&lt;/updated>
-   &lt;id>http://www.example.org/collections/collection-one/snapshots/0010/chunks&lt;/id>
-   &lt;link rel="self" href="http://www.example.org/collections/collection-one/snapshots/0001/chunks"/>
+   &lt;id>http://example.org/collections/collection-one/snapshots/0010/chunks&lt;/id>
+
    &lt;entry>
      &lt;title>Snapshot Chunks 2008-07-17&lt;/title>
      &lt;updated>2008-07-17T14:04:42.205299Z&lt;/updated>
      &lt;!-- a link to the snapshot component RDF -->
      &lt;link rel="alternate" 
-              type="application/rdf+xml"
-              href="http://www.example.org/collections/collection-one/snapshots/0001/part-1"/>
-     &lt;link rel="http://www.sdshare.org/2012/core/snapshot-component"
-              type="application/rdf+xml"
-              href="http://www.example.org/collections/collection-one/snapshots/0001/part-1"/>
+           type="application/rdf+xml"
+           href="http://example.org/collections/collection-one/snapshots/0001/part-1"/>
+     <b>&lt;link rel="http://www.sdshare.org/2012/core/snapshot-component"
+           type="application/rdf+xml"
+           href="http://example.org/collections/collection-one/snapshots/0001/part-1"/></b>
 
      &lt;id>60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
    &lt;/entry>
-   &lt;!-- an entry follows for each snapshot component.
+   &lt;!-- an entry follows for each snapshot chunk.
    ...
    -->
  &lt;/feed>    
@@ -401,9 +401,8 @@ http://www.example.org/collections/collection-one/snapshots/0001/chunks
 <div class="section">
 <h4>Fragments Feed</h4>
             
-<p>The fragments feed is an Atom feed. The entries of the feed list
-resources that have changed in a given time period. The order of the
-entries is undefined.</p>
+<p>The fragments feed is an Atom listing resources that have changed
+in a given time period. The order of the entries is undefined.</p>
 
 <p>The Atom content contains an entry for each updated, deleted, or
 created resource. Each entry contains one or more links to the
@@ -416,29 +415,30 @@ preferred format. To conform with the Atom specification the link must
 be duplicated with link relation alternate.</p>
 
 <p>This protocol introduces one new Atom extension element called
-<tt>resource</tt>. The <tt>&lt;resource></tt> element indicates to a
-client which resource is being updated from all those present in the
-resource representation.  This element MUST occur exactly once as a
-child element of each <tt>entry</tt>.
+<tt>resource</tt> in the namespace
+<tt>http://www.sdshare.org/2012/core/</tt>. The <tt>resource</tt>
+element indicates to a client which resource is being updated from all
+those present in the fragment.  This element MUST occur exactly once
+as a child element of each <tt>entry</tt>.
 </p>
 
-<p>The fragments feed service accepts an optional request parameter
-called 'since'. This parameter can be used to specify that the client
-only wishes to see entries for fragments produced, modified or deleted
-after the time given in the parameter. The effect of this parameter is
-to remove from the response body <tt>&lt;entry&gt;</tt> elements with
-timestamps in the <tt>atom:updated</tt> element older than the given
-time.</p>
+<p>The fragments feed service MUST accept an optional request
+parameter called <tt>since</tt>. This parameter can be used to specify
+that the client only wishes to see entries for fragments produced,
+modified or deleted after the time given in the parameter. The effect
+of this parameter is to remove from the response body <tt>entry</tt>
+elements with timestamps in the <tt>updated</tt> element older than
+the given time. The value of the parameter is a datetime value
+matching the format specified in section 3.3 of the Atom
+specification.</p>
 
 <p>Note that links to the service in the collection feed will not
 include this parameter. Clients must therefore add it to the URL
-themselves should they wish to use it. The value of the parameter is a
-datetime value matching the format specified in section 3.3 of the
-Atom specification.</p>
+themselves should they wish to use it.</p>
 
 <pre>
 <b>Example Request URL (with since):</b>
-    http://www.exmaple.org/collections/collection-one/fragments?since=2011-03-21T14:49:23Z 
+  http://example.org/collections/collection-one/fragments?since=2011-03-21T14:49:23Z 
 
 <b>Example response body:</b>
 &lt;feed xmlns="http://www.w3.org/2005/Atom"
@@ -451,21 +451,21 @@ Atom specification.</p>
   &lt;id>28C5DBD8-652A-4617-8C4A-C0FFC49B4475&lt;/id>
 
   &lt;entry>
-  &lt;!-- Best practice: a resource's RDFS Label or the resource URI -->
+    &lt;!-- Best practice: a resource's RDFS Label or the resource URI -->
     &lt;title>Government Spending&lt;/title>
     &lt;!-- the published date and time of the fragment -->
     &lt;updated>2008-07-17T15:55:21.971145Z&lt;/updated>
 
     &lt;!-- the id value is some unique value -->
     &lt;id>69CD5264-DB78-49c1-A7E4-04EECFA0AA85&lt;/id>
-    &lt;link rel="http://www.sdshare.org/2012/core/fragment"
+    <b>&lt;link rel="http://www.sdshare.org/2012/core/fragment"
           type="application/rdf+xml"
-href="http://www.exmaple.org/collections/collection-one/fragments?id=2321"/>
-         &lt;link rel="alternate" type="application/rdf+xml"
-href="http://www.exmaple.org/collections/collection-one/fragments?id=2321"/>
+href="http://example.org/collections/collection-one/fragments?id=2321"/></b>
+    &lt;link rel="alternate" type="application/rdf+xml"
+href="http://example.org/collections/collection-one/fragments?id=2321"/>
          
     &lt;!-- the resource indicates which resource this representation is for -->
-    &lt;sdshare:resource>http://www.example.org/concepts/governmentspending&lt;/sdshare:resource>
+    <b>&lt;sdshare:resource>http://example.org/concepts/governmentspending&lt;/sdshare:resource></b>
   &lt;/entry>
   &lt;!-- an entry follows for each changed resource being exposed
   ...

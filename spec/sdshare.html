@@ -436,6 +436,14 @@ specification.</p>
 include this parameter. Clients must therefore add it to the URL
 themselves should they wish to use it.</p>
 
+<p>As the number of changes made to the collection grows, the number
+of entries in the resources feed can become very large. To avoid
+returning excessively long responses, the server can page the
+resources feed, using the conventions defined in RFC 5005. If the feed
+is paged, each page must contain one link element with the "next"
+relation type. Other link types may also be provided, but this is not
+required.</p>
+
 <pre>
 <b>Example Request URL (with since):</b>
   http://example.org/collections/collection-one/fragments?since=2011-03-21T14:49:23Z 
@@ -473,16 +481,12 @@ href="http://example.org/collections/collection-one/fragments?id=2321"/>
 &lt;/feed>
 </pre>
 
-<p>The server is responsible for generating the resource description
-in RDF form when a client access the link provided in the atom
-entry.</p>
-
-<p>The resource representation is produced by the following fragment
-generation algorithm:</p>
+<p>For RDF data, the fragment for a resource R is produced by the
+following algorithm:</p>
 
 <ol>
   <li>
-    <p>Include every statement in which the resource is the subject.</p>
+    <p>Include every statement in which R is the subject.</p>
   </li>
   <li>
     <p>For all selected statements, if any of the statement objects
@@ -491,17 +495,8 @@ generation algorithm:</p>
     recursively.</p>
   </li>
 </ol>
-    
-<p>As the number of changes made to the collection grows, the number
-of entries in the resources feed can become very large. To avoid
-returning excessively long responses, the server can page the
-resources feed, using the conventions defined in RFC 5005. If the feed
-is paged, each page must contain one link element with the "next"
-relation type. Other link types may also be provided, but this is not
-required.</p>
-    
-        </div>     
-      </div> <!-- end 4.3 -->     
+</div>     
+</div> <!-- end 4.3 -->     
 
 <div class="section">
 <h3 class="title">Client Role</h3>

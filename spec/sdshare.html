@@ -60,7 +60,7 @@ dt {
   </div>
 
 <div class="section">
-<h2 class="title">Abstract</h2>
+<h2 class="title" id="abstract">Abstract</h2>
 
 <p>
 SDShare is a protocol for the syndication of resource descriptions. It
@@ -72,7 +72,7 @@ resource descriptions so that a local store can be kept in sync.
 </div>
 
 <div class="section">
-<h2>References</h2>
+<h2 id="references">References</h2>
 
 <dl>
   <dt>HTTP
@@ -104,7 +104,7 @@ resource descriptions so that a local store can be kept in sync.
 </div>
 
 <div class="section">
-<h2>Introduction</h2>
+<h2 id="intro">Introduction</h2>
 
 <p>This specification describes how one RDF system can maintain a
 local copy of master data contained in another RDF system. The master
@@ -128,7 +128,7 @@ document are to be interpreted as described in RFC 2119.</p>
 </div>
 
 <div class="section">
-<h2 class="title">Conceptual Model</h2>
+<h2 class="title" id="conceptual-model">Conceptual Model</h2>
 
 <p>A <dfn>server</dfn> is a node which exposes feeds so that other
 nodes can observe and retrieve the state of the data being exposed by
@@ -157,10 +157,10 @@ have been modified in the collection.</p>
 </div>
   
 <div class="section">
-<h2 class="title">Protocol</h2>
+<h2 class="title" id="protocol">Protocol</h2>
 
 <div class="section">
-<h3 class="title">Server Role</h3>
+<h3 class="title" id="server-role">Server Role</h3>
 
 <p>An SDShare server SHOULD publish the following hierarchy of Atom
 feeds to expose one or more collection(s) of resource descriptions:</p>
@@ -182,7 +182,7 @@ snapshots when requested. Note that these MAY be provided from a
 different node.</p>
 
 <div class="section">
-<h4 class="title">Overview Feed</h4>
+<h4 class="title" id="overview-feed">Overview Feed</h4>
 
 <p>The overview feed lists all collections exposed by the server. It
 MUST contain exactly one entry per collection. Each entry MUST contain
@@ -229,7 +229,7 @@ duplicated with link relation <tt>alternate</tt>.</p>
 </div>
 
 <div class="section">
-<h4 class="title">Collection Feed</h4>   
+<h4 class="title" id="collection-feed">Collection Feed</h4>   
         
 <p>A collection feed lists exactly two entries, one entry linking to a
 snapshots feed and one to a fragments feed.</p>
@@ -289,7 +289,7 @@ relation <tt>alternate</tt>.</p>
 </div>
 
 <div class="section">
-<h4 class="title">Snapshots Feed</h4>
+<h4 class="title" id="snapshots-feed">Snapshots Feed</h4>
 
 <p>The snapshots feed lists all the snapshots of a collection that are
 exposed by a server. Each entry in the feed represents a single
@@ -300,8 +300,9 @@ of <tt>http://www.sdshare.org/2012/core/snapshot</tt> and a
 also have an <tt>href</tt> attribute that links to the data for the
 snapshot. The entry's <tt>updated</tt> element MUST reflect the time
 when the snapshot was taken. To conform with the Atom specification
-the link must also be duplicated with link
-relation <tt>alternate</tt>.</p>
+the link MUST also be duplicated with link
+relation <tt>alternate</tt>. Every <tt>link</tt> referring to a
+snapshot MUST have a <tt>type</tt> attribute.</p>
 
 <p>In cases where the snapshot is very large the server MAY expose an
 additional link to a chunked snapshot feed, with link relation
@@ -340,7 +341,7 @@ http://example.org/collections/collection-one/snapshots
               type="application/rdf+xml"
               href="http://example.org/collections/collection-one/snapshots/0001/chunks"/>
 
-     &lt;id>60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
+     &lt;id>urn:uuid:60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
    &lt;/entry>
    &lt;!-- an entry follows for each RDF snapshot being exposed.
    ...
@@ -350,7 +351,7 @@ http://example.org/collections/collection-one/snapshots
 </div>
 
 <div class="section">
-<h4 class="title">Chunked Snapshot Feed</h4>
+<h4 class="title" id="chunked-snapshots">Chunked Snapshot Feed</h4>
 
 <p>The chunked snapshot feed contains links to all the chunks that
 comprise the snapshot. It is up to the server to decide the amount of
@@ -361,8 +362,9 @@ entry MUST contain at least one <tt>link</tt> element with a link relation
 of <tt>http://www.sdshare.org/2012/core/snapshot-component</tt> and a
 <tt>type</tt> attribute specifying the format of the snapshot. It must
 also have an <tt>href</tt> attribute that links to the data.  To
-conform with the Atom specification the link must be duplicated with
-link relation <tt>alternate</tt>.</p>
+conform with the Atom specification the link MUST be duplicated with
+link relation <tt>alternate</tt>. Every <tt>link</tt> referring to a
+snapshot chunk MUST have a <tt>type</tt> attribute.</p>
 
 <pre>
 <b>Example Request URL:</b>
@@ -389,7 +391,7 @@ http://example.org/collections/collection-one/snapshots/0001/chunks
            type="application/rdf+xml"
            href="http://example.org/collections/collection-one/snapshots/0001/part-1"/></b>
 
-     &lt;id>60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
+     &lt;id>urn:uuid:60a76c80-d300-11d9-b93C-0003939e0af7&lt;/id>
    &lt;/entry>
    &lt;!-- an entry follows for each snapshot chunk.
    ...
@@ -399,7 +401,7 @@ http://example.org/collections/collection-one/snapshots/0001/chunks
 </div>
 
 <div class="section">
-<h4>Fragments Feed</h4>
+<h4 id="fragments-feed">Fragments Feed</h4>
             
 <p>The fragments feed is an Atom feed listing resources that have
 changed in a given time period. The order of the entries is
@@ -412,8 +414,9 @@ the resource was updated. Links to the fragment must use
 the <tt>http://www.sdshare.org/2012/core/fragment</tt> link
 relationship, and can be in different formats identified with
 the <tt>type</tt> attribute, allowing clients to choose their
-preferred format. To conform with the Atom specification the link must
-be duplicated with link relation alternate.</p>
+preferred format. To conform with the Atom specification the link MUST
+be duplicated with link relation alternate. Every <tt>link</tt>
+referring to a fragment MUST have a <tt>type</tt> attribute.</p>
 
 <p>This protocol introduces one new Atom extension element called
 <tt>resource</tt> in the namespace
@@ -441,8 +444,9 @@ themselves should they wish to use it.</p>
 of entries in the fragment feed can become very large. To avoid
 returning excessively long responses, the server MAY page the fragment
 feed, using the conventions defined in RFC 5005. If the feed is paged,
-each page MUST contain one link element with the "next" relation type.
-Other link types MAY also be provided.</p>
+each page except the last MUST contain one link element with
+the <tt>next</tt> relation type.  Other link types MAY also be
+provided.</p>
 
 <pre>
 <b>Example Request URL (with since):</b>
@@ -456,7 +460,7 @@ Other link types MAY also be provided.</p>
     &lt;name>SDShare Server&lt;/name>
   &lt;/author>
   &lt;updated>2008-07-17T15:47:17.062211Z&lt;/updated>
-  &lt;id>28C5DBD8-652A-4617-8C4A-C0FFC49B4475&lt;/id>
+  &lt;id>urn:uuid:28C5DBD8-652A-4617-8C4A-C0FFC49B4475&lt;/id>
 
   &lt;entry>
     &lt;!-- Best practice: a resource's RDFS Label or the resource URI -->
@@ -465,7 +469,7 @@ Other link types MAY also be provided.</p>
     &lt;updated>2008-07-17T15:55:21.971145Z&lt;/updated>
 
     &lt;!-- the id value is some unique value -->
-    &lt;id>69CD5264-DB78-49c1-A7E4-04EECFA0AA85&lt;/id>
+    &lt;id>urn:uuid:69CD5264-DB78-49c1-A7E4-04EECFA0AA85&lt;/id>
     <b>&lt;link rel="http://www.sdshare.org/2012/core/fragment"
           type="application/rdf+xml"
 href="http://example.org/collections/collection-one/fragments?id=2321"/></b>
@@ -495,7 +499,7 @@ the following algorithm:</p>
 </div> <!-- end 5.1.5 -->     
 
 <div class="section">
-<h3 class="title">Client Role</h3>
+<h3 class="title" id="client-role">Client Role</h3>
 
 <p>This section describes the most common operations performed by
 SDShare clients, and some minimal requirements for client behaviour.
@@ -518,7 +522,7 @@ last update it has seen, called <tt>t</tt>. Initially, <tt>t</tt> is
 not set.</p>
 
 <div class="section">
-<h4>Snapshot Processing</h4>
+<h4 id="snapshot-processing">Snapshot Processing</h4>
 
 <p>To process a snapshot, the client should first delete the local
 copy of the collection (if it has one). The snapshot can then be
@@ -541,7 +545,7 @@ response.</p>
 </div>
 
 <div class="section">
-<h4>Fragment Processing</h4>
+<h4 id="fragment-processing">Fragment Processing</h4>
 
 <p>A client wishing to update its local collection as new changes
 occur on the server, should process the fragments feed for the
@@ -562,7 +566,7 @@ the <tt>since</tt> parameter described in section 5.1.4.</p>
 </div>
 
 <div class="section">
-<h4>A Fragment Update Algorithm for RDF Stores</h4>
+<h4 id="fragment-update-rdf">A Fragment Update Algorithm for RDF Stores</h4>
 
 <p>Each Atom entry contains a <tt>resource</tt> element, which
 identifies which resource is to be updated. We call this resource
@@ -588,7 +592,7 @@ determined by the client.</p>
 </div>
 
 <div class="section">
-<h3>Recommended Resource Representation Formats</h3>
+<h3 id="formats">Recommended Resource Representation Formats</h3>
 
 <p>Any formats may be used for resource representations, but the
 following are recommended:</p>

@@ -4,11 +4,11 @@
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="SDShare Protocol Specification : Protocol for the syndication and synchronisation of RDF data">
+    <meta name="description" content="SDShare Protocol : Protocol for the syndication and synchronisation of RDF data">
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>SDShare Protocol Specification</title>
+    <title>SDShare Protocol</title>
   </head>
 
   <body>
@@ -18,7 +18,7 @@
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/SDShare/Specification">View on GitHub</a>
 
-          <h1 id="project_title">SDShare Protocol Specification</h1>
+          <h1 id="project_title">SDShare Protocol</h1>
           <h2 id="project_tagline">Protocol for the syndication and synchronisation of RDF data</h2>
 
             <section id="downloads">
@@ -32,18 +32,11 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h3>
-<a id="the-home-of-the-sdshare-protocol" class="anchor" href="#the-home-of-the-sdshare-protocol" aria-hidden="true"><span class="octicon octicon-link"></span></a>The Home of the SDShare Protocol</h3>
+<a id="the-sdshare-protocol" class="anchor" href="#the-sdshare-protocol" aria-hidden="true"><span class="octicon octicon-link"></span></a>The SDShare Protocol</h3>
 
 <p>SDShare is a stream based protocol for exposing and consuming data in a standardised way. It uses Atom and RDF as building blocks to allow servers to expose collections of data, and clients to process and update local data stores with copies of the data.</p>
 
 <p>RDF provides a very flexible data model that allows data of any form to be represented. The existing RDF family of standards define how to serialise the model, how to query the model (SPARQL) and how to update the model (SPARQL Update). However, there are no protocols that define how a machine can both expose and consume RDF in a system of interconnected nodes. A classic use case for this requirement is where one RDF server contains a collection of master data and another RDF system wishes to use that data. The master data will change over time. This protocol defines how the master data server can publish the changes to the resources it manages and how a client can consume them to ensure it is in sync.</p>
-
-<h3>
-<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h3>
-
-<p><a href="http://creativecommons.org/licenses/by-sa/3.0/"><img src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" alt="Creative Commons Licence"></a>
-SDShare Protocol by Graham Moore, Lars Marius Garshol, Marc Kuster is licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
-Based on a work at <a href="http://www.egovpt.org/fg/CWA_Part_1b">www.egovpt.org</a>.</p>
 
 <h3>
 <a id="specification" class="anchor" href="#specification" aria-hidden="true"><span class="octicon octicon-link"></span></a>Specification</h3>
@@ -55,13 +48,20 @@ Based on a work at <a href="http://www.egovpt.org/fg/CWA_Part_1b">www.egovpt.org
 </ul>
 
 <p>Comments can be sent to the editors, Graham Moore (gramoore at outlook.com) and Lars Marius Garshol (larsga at garshol.priv.no). The work itself can be followed on <a href="https://github.com/SDShare/Specification">github</a>, and problems can also be reported <a href="https://github.com/SDShare/Specification/issues?sort=updated&amp;state=open">as issues</a>.</p>
+
+<h3>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h3>
+
+<p><a href="http://creativecommons.org/licenses/by-sa/3.0/"><img src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" alt="Creative Commons Licence"></a>
+SDShare Protocol by Graham Moore, Lars Marius Garshol, Marc Kuster is licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+Based on a work at <a href="http://www.egovpt.org/fg/CWA_Part_1b">www.egovpt.org</a>.</p>
       </section>
     </div>
 
     <!-- FOOTER  -->
     <div id="footer_wrap" class="outer">
       <footer class="inner">
-        <p class="copyright">SDShare Protocol Specification maintained by <a href="https://github.com/SDShare">SDShare</a></p>
+        <p class="copyright">SDShare Protocol maintained by <a href="https://github.com/SDShare">SDShare</a></p>
         <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>

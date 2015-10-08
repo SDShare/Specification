@@ -1,0 +1,621 @@
+﻿<html>
+<style>
+body {
+  max-width: 800px;
+  margin-top: 50pt;
+  margin-left: 50pt;
+  counter-reset: h2 h3 h4;
+}
+h2:before {
+    counter-increment: h2;
+    content: counter(h2) ". ";
+}
+h2 {
+    counter-reset: h3 h4;
+}
+h3:before {
+    counter-increment: h3;
+    content: counter(h2) "." counter(h3) ". ";
+    counter-reset: h4;
+}
+h3 {
+    counter-reset: h4;
+}
+h4:before {
+    counter-increment: h4;
+    content: counter(h2) "." counter(h3) "." counter(h4) ". ";
+}
+pre {
+  background-color: #EEE;
+}
+.ednote:before {
+  content: "Ed. Note: ";
+  font-weight: bold;
+}
+.ednote {
+  font-style: italic;
+  background-color: palegreen;
+}
+dt {
+  font-weight: bold
+}
+</style>
+
+<header>
+    <title>SDShare - A Protocol for the Syndication of Resource Descriptions</title>
+</header>
+
+<body>
+  <div class="header">
+    <h1 class="title">SDShare - A Protocol for the Syndication of Resource Descriptions</h1>
+    <div class="version"><b>Version 1.0 Final Draft</b></div>
+    <div class="date"><b>Date:</b> 2012-07-10</div>
+    <div class="author"><b>Author:</b> Graham Moore (gra@brightstardb.com,
+      <a href="http://twitter.com/gra_moore">@gra_moore</a>)</div>
+    <div class="author"><b>Author:</b> Lars Marius Garshol
+    (larsga@garshol.priv.no,
+      <a href="http://twitter.com/larsga">@larsga</a>)</div>
+    <div class="link"><b>This document:</b>
+      http://www.sdshare.org/spec/sdshare-20120710.html</div>
+  </div>
+
+<div class="section">
+<h2 class="title" id="abstract">Abstract</h2>
+
+<p>
+SDShare is a protocol for the syndication of resource descriptions. It
+defines how a RESTful service can publish a series of feeds that list
+snapshots and changes to collections of resources. This protocol also
+defines how a client should process those feeds and the linked
+resource descriptions so that a local store can be kept in sync.
+</p>    
+</div>
+
+<div class="section">
+<h2 id="references">References</h2>
+
+<dl>
+  <dt>HTTP
+  <dd><a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2626</a>, HTTP
+    1.1. September 2004.</li>
+  <dt>Atom
+  <dd><a href="http://www.ietf.org/rfc/rfc4287.txt">RFC  4287</a>,
+    The Atom Syndication Format. December 2005.</li>
+  <dt>RDF
+  <dd><a href="http://www.w3.org/TR/rdf-concepts/">Resource
+      Description Framework (RDF): Concepts and Abstract
+      Syntax</a>, W3C Recommendation, February 2004.</li>
+  <dt>NTriples
+  <dd><a href="http://www.w3.org/TR/rdf-testcases/#ntriples"
+         >RDF Test Cases</a>, W3C Recommendation, 10 February 2004.</li>
+  <dt>RDF/XML
+  <dd><a href="http://www.w3.org/TR/REC-rdf-syntax/">RDF/XML
+      Syntax Specification (Revised)</a>, W3C Recommendation,
+    10 February 2004.
+  <dt>Atom Paging
+  <dd><a href="http://www.ietf.org/rfc/rfc5005.txt"
+         >RFC 5005</a>: Feed Paging and Archiving, IETF Standard,
+    September 2007</li>
+  <dt>RFC 2119
+  <dd><a href="http://www.ietf.org/rfc/rfc2119.txt" >RFC 2119</a>: Key
+         words for use in RFCs to Indicate Requirement Levels,
+         IETF, March 1997.</li>
+</dl>
+</div>
+
+<div class="section">
+<h2 id="intro">Introduction</h2>
+
+<p>This specification describes how one RDF system can maintain a
+local copy of master data contained in another RDF system. The master
+data will change over time. This protocol defines how the master data
+server can publish the changes to the resources it manages and how a
+client can consume them to ensure it is in sync.</p>
+
+<p>
+SDShare also specifies how a client should interpret and process these
+feeds in order to consume the resource descriptions. A client that
+wishes to maintain a local resource collection in sync with one held
+on the server first fetches the most recent snapshot for the required
+collection. It then subscribes to the update feed for that
+collection. This feed lists the resources whose state has changed in
+the underlying resource collection. A client can retrieve the RDF for
+a updated resource and update its local collection.</p>
+
+<p>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in RFC 2119.</p>
+</div>
+
+<div class="section">
+<h2 class="title" id="conceptual-model">Conceptual Model</h2>
+
+<p>A <dfn>server</dfn> is a node which exposes feeds so that other
+nodes can observe and retrieve the state of the data being exposed by
+the server.
+
+<p>A <dfn>client</dfn> is a node which subscribes to one or more
+feeds and implements the update semantics defined in this
+protocol. It is possible for the same node to be both a server and a
+client at the same time.</p>
+
+<p>An SDShare server exposes a set of collections.
+A <dfn>collection</dfn> is a coherent data set, defined by the server
+in any way it sees fit. When exposing an RDF data store via SDShare, a
+natural set of collections to use is to let each graph be a
+collection, but any set of collections is allowed.</p>
+
+<p>A <dfn>snapshot</dfn> is a complete representation of a collection
+as it existed at some point in time.</p>
+
+<p>A <dfn>resource description</dfn> is a complete representation of a
+single resource that exists in a collection.</p>
+
+<p>A <dfn>fragments feed</dfn> exposes a list of the resources that
+have been modified in the collection.</p>
+
+</div>
+  
+<div class="section">
+<h2 class="title" id="protocol">Protocol</h2>
+
+<div class="section">
+<h3 class="title" id="server-role">Server Role</h3>
+
+<p>An SDShare server SHOULD publish the following hierarchy of Atom
+feeds to expose one or more collection(s) of resource descriptions:</p>
+      
+<ul>
+  <li>An overview feed which lists the collections of resource
+  descriptions that the server exposes.</li>
+  <li>A collection feed for each collection of resource descriptions
+  that each links to a corresponding snapshots feed and a
+  corresponding fragments feed.</li>
+  <li>A snapshots feed for each collection. Each snapshot represents
+  the state of a collection at point of time.</li>
+  <li>A fragment feed for each collection. Each feed entry exists to
+  reflect that the referenced resource has been updated. </li>
+</ul>
+
+<p>An SDSshare server SHOULD also provide resource descriptions and
+snapshots when requested. Note that these MAY be provided from a
+different node.</p>
+
+<div class="section">
+<h4 class="title" id="overview-feed">Overview Feed</h4>
+
+<p>The overview feed lists all collections exposed by the server. It
+MUST contain exactly one entry per collection. Each entry MUST contain
+a <tt>link</tt> element with a link relation of 
+<tt>http://www.sdshare.org/2012/core/collectionfeed</tt>,
+<tt>type</tt> set to <tt>application/atom+xml</tt>, and
+an <tt>href</tt> whose value links to the collection feed for that
+collection.
+            
+<p>To conform with the Atom specification the link must also be
+duplicated with link relation <tt>alternate</tt>.</p>
+
+<pre>
+<b>Example Request URL:</b>
+  http://example.org/collections
+
+<b>Example Response:</b>
+   &lt;feed xmlns="http://www.w3.org/2005/Atom">
+   &lt;title>Collection managed by example.org&lt;/title>
+   &lt;link href="http://example.org/collections"/>
+   &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
+   &lt;author>
+     &lt;name>SDShare Server&lt;/name>
+   &lt;/author>
+   &lt;id>http://example.org/collections&lt;/id>
+   &lt;!-- collection entry -->
+   &lt;entry>
+     &lt;title>A Resource Collection&lt;/title>
+
+     &lt;!-- a link to the collection feed -->
+<b>     &lt;link rel="http://www.sdshare.org/2012/core/collectionfeed" type="application/atom+xml"
+           href="http://example.org/collections/collection-one"/> </b>
+     &lt;link rel="alternate" type="application/atom+xml"
+           href="http://example.org/collections/collection-one"/> </b>
+     &lt;id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id>
+     &lt;updated>2008-12-13T18:30:02Z&lt;/updated>
+     &lt;summary>A set of RDF resources describing a taxonomy.&lt;/summary>
+   &lt;/entry>
+   &lt;!-- an entry follows for each collection being exposed.
+   ...
+   -->
+ &lt;/feed>
+</pre>
+</div>
+
+<div class="section">
+<h4 class="title" id="collection-feed">Collection Feed</h4>   
+        
+<p>A collection feed lists exactly two entries, one entry linking to a
+snapshots feed and one to a fragments feed.</p>
+            
+<p>
+The Atom feed MUST contain exactly two entries, one that links to a
+snapshot feed for the collection (the link relation is
+<tt>http://www.sdshare.org/2012/core/snapshotsfeed</tt>), and another to
+the fragment feed of the collection (the link relation is
+<tt>http://www.sdshare.org/2012/core/fragmentsfeed</tt>). To conform with
+the Atom specification both links must be duplicated with link
+relation <tt>alternate</tt>.</p>
+
+<pre>
+<b>Example Request URL:</b>
+  http://example.org/collections/collection-one
+
+<b>Example Response:</b>
+  &lt;feed xmlns="http://www.w3.org/2005/Atom">
+  &lt;title>A Resource Collection&lt;/title>
+  &lt;updated>2008-09-26T11:13:40-01:00&lt;/updated>
+  &lt;id>http://example.org/collections/collection-one&lt;/id>
+  &lt;author>
+    &lt;name>SDShare Server&lt;/name>
+  &lt;/author>
+
+  &lt;entry>
+    &lt;title>Collection Updates&lt;/title>
+    &lt;id>http://example.org/collections/collection-one/fragments&lt;/id>
+    &lt;updated>2008-09-11T17:58:39-01:00&lt;/updated>
+    &lt;author>
+      &lt;name>SDShare Server&lt;/name>
+    &lt;/author>
+    &lt;link href="http://example.org/collections/collection-one/fragments"
+             rel="alternate" 
+             type="application/atom+xml"/>
+    &lt;link href="http://example.org/collections/collection-one/fragments" 
+             rel="<b>http://www.sdshare.org/2012/core/fragmentsfeed</b>" 
+             type="application/atom+xml"/>
+  &lt;/entry>
+  &lt;entry>
+    &lt;title>Collection Snapshots&lt;/title>
+    &lt;id>http://example.org/collections/collection-one/snapshots&lt;/id>
+    &lt;updated>2008-09-11T17:58:39-01:00&lt;/updated>
+    &lt;author>
+      &lt;name>SDShare Server&lt;/name>
+    &lt;/author>
+    &lt;link href="http://example.org/collections/collection-one/snapshots"
+             rel="alternate"
+             type="application/atom+xml"/>
+    &lt;link href="http://example.org/collections/collection-one/snapshots"
+             rel="<b>http://www.sdshare.org/2012/core/snapshotsfeed</b>" 
+             type="application/atom+xml"/>
+  &lt;/entry>
+&lt;/feed>
+</pre>
+</div>
+
+<div class="section">
+<h4 class="title" id="snapshots-feed">Snapshots Feed</h4>
+
+<p>The snapshots feed lists all the snapshots of a collection that are
+exposed by a server. Each entry in the feed represents a single
+snapshot. The entry MUST contain at least one <tt>link</tt> element
+with a link relation
+of <tt>http://www.sdshare.org/2012/core/snapshot</tt> and a
+<tt>type</tt> attribute specifying the format of the snapshot. It must
+also have an <tt>href</tt> attribute that links to the data for the
+snapshot. The entry's <tt>updated</tt> element MUST reflect the time
+when the snapshot was taken. To conform with the Atom specification
+the link MUST also be duplicated with link
+relation <tt>alternate</tt>. Every <tt>link</tt> referring to a
+snapshot MUST have a <tt>type</tt> attribute.</p>
+
+<p>In cases where the snapshot is very large the server MAY expose an
+additional link to a chunked snapshot feed, with link relation
+<tt>http://www.sdshare.org/2012/core/chunked-snapshot</tt> and
+type <tt>application/atom+xml</tt>. The chunked snapshot feed will
+contain a list of atom entries where each one links to part of the
+data.</p>
+           
+<pre>
+<b>Example Request URL:</b>
+http://example.org/collections/collection-one/snapshots
+
+<b>Example Response:</b>
+ &lt;feed xmlns="http://www.w3.org/2005/Atom">
+   &lt;title>The Snapshots of the Resource Collection&lt;/title>
+   &lt;subtitle>A list of all snapshots of this collection&lt;/subtitle>
+   &lt;author>
+     &lt;name>SDShare Server&lt;/name>
+   &lt;/author>
+   &lt;updated>2008-07-17T12:15:07.020071Z&lt;/updated>
+   &lt;id>http://example.org/collections/collection-one/snapshots&lt;/id>
+
+   &lt;entry>
+     &lt;title>Snapshot 2008-07-17&lt;/title>
+     &lt;updated>2008-07-17T14:04:42.205299Z&lt;/updated>
+     &lt;!-- a link to the snapshot RDF -->
+     &lt;link rel="alternate" 
+              type="application/rdf+xml"
+              href="http://example.org/collections/collection-one/snapshots/0001"/>
+     &lt;link rel="http://www.sdshare.org/2012/core/snapshot"
+              type="application/rdf+xml"
+              href="http://example.org/collections/collection-one/snapshots/0001"/>
+
+     &lt;!-- optional link to the chunked snapshots feed -->
+     &lt;link rel="http://www.sdshare.org/2012/core/chunked-snapshot"
+              type="application/rdf+xml"
+              href="http://example.org/collections/collection-one/snapshots/0001/chunks"/>
+
+     &lt;id>urn:uuid:60a76c80-d300-11d9-b93C-0003939e0af6&lt;/id>
+   &lt;/entry>
+   &lt;!-- an entry follows for each RDF snapshot being exposed.
+   ...
+   -->
+ &lt;/feed>    
+</pre>
+</div>
+
+<div class="section">
+<h4 class="title" id="chunked-snapshots">Chunked Snapshot Feed</h4>
+
+<p>The chunked snapshot feed contains links to all the chunks that
+comprise the snapshot. It is up to the server to decide the amount of
+data in each chunk.</p>
+
+<p>Each entry in the feed represents a subset of the snapshot. The
+entry MUST contain at least one <tt>link</tt> element with a link relation
+of <tt>http://www.sdshare.org/2012/core/snapshot-component</tt> and a
+<tt>type</tt> attribute specifying the format of the snapshot. It must
+also have an <tt>href</tt> attribute that links to the data.  To
+conform with the Atom specification the link MUST be duplicated with
+link relation <tt>alternate</tt>. Every <tt>link</tt> referring to a
+snapshot chunk MUST have a <tt>type</tt> attribute.</p>
+
+<pre>
+<b>Example Request URL:</b>
+http://example.org/collections/collection-one/snapshots/0001/chunks
+
+<b>Example Response:</b>
+ &lt;feed xmlns="http://www.w3.org/2005/Atom">
+   &lt;title>The Chunked Snapshots of the Resource Collection&lt;/title>
+   &lt;subtitle>A list of all chunks comprising the snapshots of this collection&lt;/subtitle>
+   &lt;author>
+     &lt;name>SDShare Server&lt;/name>
+   &lt;/author>
+   &lt;updated>2008-07-17T12:15:07.020071Z&lt;/updated>
+   &lt;id>http://example.org/collections/collection-one/snapshots/0010/chunks&lt;/id>
+
+   &lt;entry>
+     &lt;title>Snapshot Chunks 2008-07-17&lt;/title>
+     &lt;updated>2008-07-17T14:04:42.205299Z&lt;/updated>
+     &lt;!-- a link to the snapshot component RDF -->
+     &lt;link rel="alternate" 
+           type="application/rdf+xml"
+           href="http://example.org/collections/collection-one/snapshots/0001/part-1"/>
+     <b>&lt;link rel="http://www.sdshare.org/2012/core/snapshot-component"
+           type="application/rdf+xml"
+           href="http://example.org/collections/collection-one/snapshots/0001/part-1"/></b>
+
+     &lt;id>urn:uuid:60a76c80-d300-11d9-b93C-0003939e0af7&lt;/id>
+   &lt;/entry>
+   &lt;!-- an entry follows for each snapshot chunk.
+   ...
+   -->
+ &lt;/feed>    
+</pre>
+</div>
+
+<div class="section">
+<h4 id="fragments-feed">Fragments Feed</h4>
+            
+<p>The fragments feed is an Atom feed listing resources that have
+changed in a given time period. The order of the entries is
+undefined.</p>
+
+<p>The Atom content contains an entry for each updated, deleted, or
+created resource. Each entry contains one or more links to the
+fragment and the <tt>updated</tt> element contains the time at which
+the resource was updated. Links to the fragment must use
+the <tt>http://www.sdshare.org/2012/core/fragment</tt> link
+relationship, and can be in different formats identified with
+the <tt>type</tt> attribute, allowing clients to choose their
+preferred format. To conform with the Atom specification the link MUST
+be duplicated with link relation alternate. Every <tt>link</tt>
+referring to a fragment MUST have a <tt>type</tt> attribute.</p>
+
+<p>This protocol introduces one new Atom extension element called
+<tt>resource</tt> in the namespace
+<tt>http://www.sdshare.org/2012/core/</tt>. The <tt>resource</tt>
+element indicates to a client which resource is being updated from all
+those present in the fragment.  This element MUST occur exactly once
+as a child element of each <tt>entry</tt>.
+</p>
+
+<p>The fragments feed service MUST accept an optional request
+parameter called <tt>since</tt>. This parameter is be used to specify
+that the client only wishes to see entries for fragments produced,
+modified or deleted after the time given in the parameter. The effect
+of this parameter is to remove from the response body <tt>entry</tt>
+elements with timestamps in the <tt>updated</tt> element older than
+the given time. The value of the parameter is a datetime value
+matching the format specified in section 3.3 of the Atom
+specification.</p>
+
+<p>Note that links to the service in the collection feed will not
+include this parameter. Clients must therefore add it to the URL
+themselves should they wish to use it.</p>
+
+<p>As the number of changes made to the collection grows, the number
+of entries in the fragment feed can become very large. To avoid
+returning excessively long responses, the server MAY page the fragment
+feed, using the conventions defined in RFC 5005. If the feed is paged,
+each page except the last MUST contain one link element with
+the <tt>next</tt> relation type.  Other link types MAY also be
+provided.</p>
+
+<pre>
+<b>Example Request URL (with since):</b>
+  http://example.org/collections/collection-one/fragments?since=2011-03-21T14:49:23Z 
+
+<b>Example response body:</b>
+&lt;feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:sdshare="http://www.sdshare.org/2012/core/">
+  &lt;title>Fragments feed from the collection&lt;/title>
+  &lt;author>
+    &lt;name>SDShare Server&lt;/name>
+  &lt;/author>
+  &lt;updated>2008-07-17T15:47:17.062211Z&lt;/updated>
+  &lt;id>urn:uuid:28C5DBD8-652A-4617-8C4A-C0FFC49B4475&lt;/id>
+
+  &lt;entry>
+    &lt;!-- Best practice: a resource's RDFS Label or the resource URI -->
+    &lt;title>Government Spending&lt;/title>
+    &lt;!-- the published date and time of the fragment -->
+    &lt;updated>2008-07-17T15:55:21.971145Z&lt;/updated>
+
+    &lt;!-- the id value is some unique value -->
+    &lt;id>urn:uuid:69CD5264-DB78-49c1-A7E4-04EECFA0AA85&lt;/id>
+    <b>&lt;link rel="http://www.sdshare.org/2012/core/fragment"
+          type="application/rdf+xml"
+href="http://example.org/collections/collection-one/fragments?id=2321"/></b>
+    &lt;link rel="alternate" type="application/rdf+xml"
+href="http://example.org/collections/collection-one/fragments?id=2321"/>
+         
+    &lt;!-- the resource indicates which resource this representation is for -->
+    <b>&lt;sdshare:resource>http://example.org/concepts/governmentspending&lt;/sdshare:resource></b>
+  &lt;/entry>
+  &lt;!-- an entry follows for each changed resource being exposed
+  ...
+  -->
+&lt;/feed>
+</pre>
+
+<p>For RDF data, the set of statements S making up the fragment for a
+resource R in a collection corresponding to a graph G is produced by
+the following algorithm:</p>
+
+<ul>
+  <li>Include in S all statements in G in which R is the subject.</li>
+  <li>For all statements in S where the object is a blank node B, find
+  all statements with B as the subject, and add those statements to
+  S. Repeat recursively with all B's statements. </li>
+</ul>
+</div>     
+</div> <!-- end 5.1.5 -->     
+
+<div class="section">
+<h3 class="title" id="client-role">Client Role</h3>
+
+<p>This section describes the most common operations performed by
+SDShare clients, and some minimal requirements for client behaviour.
+This specification does not restrict what clients may do with the data
+they retrieve.</p>
+
+<p>The client generally updates a local collection with data from a
+remote collection using the SDShare feeds. A local collection is
+typically considered to be an RDF graph but can be some other local
+data store such as a relational database or archiving system. The
+client often starts off with no local data, and would then typically
+begin by retreiving a snapshot and loading that into the local
+collection. Thereafter, the client waits for resources to appear on
+the fragments feed. When an entry appears on the fragments feed, the
+local representation of that resource is deleted and the new
+representation offered by the server is loaded in its place.</p>
+
+<p>While processing, the client MUST keep track of the time of the
+last update it has seen, called <tt>t</tt>. Initially, <tt>t</tt> is
+not set.</p>
+
+<div class="section">
+<h4 id="snapshot-processing">Snapshot Processing</h4>
+
+<p>To process a snapshot, the client should first delete the local
+copy of the collection (if it has one). The snapshot can then be
+downloaded from the server, and written into the local collection.</p>
+
+<p>If the server exposes a chunked snapshot feed, the client should
+use it. For each entry in the feed the client should use the
+approperiate link to retrieve the snapshot chunk and load it into the
+local collection.</p>
+
+<p>Once a snapshot has been processed successfully, <tt>t</tt> MUST be
+set to the time in the <tt>updated</tt> element of the snapshot entry
+that was processed.</p>
+
+<p>The chunked snapshot feed and the complete snapshot data MAY be
+produced asynchronously by the server. If this is the case, the server
+may return an HTTP 202 response code, in which case the client MUST
+wait, and retry the same request until it receives an HTTP 200
+response.</p>
+</div>
+
+<div class="section">
+<h4 id="fragment-processing">Fragment Processing</h4>
+
+<p>A client wishing to update its local collection as new changes
+occur on the server, should process the fragments feed for the
+appropriate collection. For each fragment, the clients should delete
+its local copy of the fragment, and then replace it with the new
+fragment from the server. Section 5.2.3 describes a simple update
+algorithm for RDF data stores.</p>
+
+<p>In the case where the fragments feed is paged, as described in Atom
+Specification 3.3, then the client should follow the <tt>next</tt>
+links to find the rest of the fragments.</p>
+
+<p>Once all fragments have been successfully processed, the client
+MUST set <tt>t</tt> to the highest (that is, latest) value observed in
+the <tt>updated</tt> element of any fragment entry. If <tt>t</tt> has
+a value when fragment processing begins, the client MUST pass it in
+the <tt>since</tt> parameter described in section 5.1.4.</p>
+</div>
+
+<div class="section">
+<h4 id="fragment-update-rdf">A Fragment Update Algorithm for RDF Stores</h4>
+
+<p>Each Atom entry contains a <tt>resource</tt> element, which
+identifies which resource is to be updated. We call this resource
+R.</p>
+
+<p>The Atom entry provides a set of links with link relation
+<tt>http://www.sdshare.org/2012/core/fragment</tt> referring to
+different representations of the resource. It is up to the client to
+choose which link to follow, based on the <tt>type</tt> attribute.</p>
+
+<p>The link is used to retrieve a set of RDF statements that are the
+new representation of the resource R. We call this set of statements
+S. These statements are to be written to a graph G, where G is
+determined by the client.</p>
+
+<ul>
+  <li>Follow the fragment generation algorithm in section 5.1.5 for R
+  in G, and call the resulting set of statements S'.</li>
+  <li>Delete all statements in S' from G.</li>
+  <li>Insert all statements in S into G.</li>
+</ul>
+</div>
+</div>
+
+<div class="section">
+<h3 id="formats">Recommended Resource Representation Formats</h3>
+
+<p>Any formats may be used for resource representations, but the
+following are recommended:</p>
+    
+<ul>
+  <li>RDF/XML (application/rdf+xml)</li>
+  <li>NTriples (text/plain)</li>
+</ul>
+</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-33281765-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>    
+</body>
+</html>    
